@@ -1,0 +1,32 @@
+* {
+    outline: none;
+}
+
+.custom-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #ccc;
+    border-top: 3px solid blue;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.delete-image {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+}
+
+.item-image:hover :not(:hover) {
+    filter: brightness(.5);
+}

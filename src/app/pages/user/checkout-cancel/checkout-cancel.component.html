@@ -1,0 +1,14 @@
+<div *ngIf="isCancel" class="w-full h-[100vh] flex justify-center items-center">
+    <div class="bg-white p-8 rounded-2xl shadow-lg text-center max-w-md w-full">
+
+        <!-- Hình ảnh minh họa -->
+        <img src="https://onc.org/wp-content/uploads/cancelled.png" alt="Canceled Transaction"
+            class="mx-auto mb-6 h-40 object-contain">
+
+        <h1 class="text-2xl font-bold mb-2 text-orange-500">Giao dịch đã bị hủy</h1>
+        <a href="/" class="inline-block bg-white border-2 px-6 py-2 rounded-lg font-semibold transition hover:shadow-md"
+            style="border-color: #FF8900; color: #FF8900;">
+            Quay về trang chủ sau {{seconds}}s
+        </a>
+    </div>
+</div>

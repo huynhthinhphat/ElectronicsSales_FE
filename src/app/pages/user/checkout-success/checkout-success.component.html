@@ -1,0 +1,83 @@
+<div *ngIf="isSuccess">
+    <div class="bg-white pt-[40px]">
+        <div class="max-w-7xl mt-3 mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="space-y-2 w-full h-[70%] bg-cover bg-center"
+                style="background-image: url(&quot;http://res.cloudinary.com/dpxcvonet/image/upload/v1742182099/electronics-sales/auzpiagtf0lw7dn5ze9s.png&quot;);">
+                <div class="relative h-[200px] sm:h-[250px] w-full flex justify-center">
+                    <img src="http://res.cloudinary.com/dpxcvonet/image/upload/v1742182099/electronics-sales/wp6mbiwjivcpv75zs0a1.png"
+                        alt="Success Icon"
+                        class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full object-contain max-w-[250px]">
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800">Đặt hàng thành công!</h1>
+                <div class="flex justify-center text-sm">
+                    <button (click)="goToHome()"
+                        class="bg-[#FF8900] cursor-pointer mt-4 sm:mt-6 p-3 sm:p-4 hover:bg-orange-600 text-white rounded-md flex items-center gap-2 text-[16px] sm:text-[18px]">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                            class="h-5 w-5" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M352 160v-32C352 57.42 294.579 0 224 0 153.42 0 96 57.42 96 128v32H0v272c0 44.183 35.817 80 80 80h288c44.183 0 80-35.817 80-80V160h-96zm-192-32c0-35.29 28.71-64 64-64s64 28.71 64 64v32H160v-32zm160 120c-13.255 0-24-10.745-24-24s10.745-24 24-24 24 10.745 24 24-10.745 24-24 24zm-192 0c-13.255 0-24-10.745-24-24s10.745-24 24-24 24 10.745 24 24-10.745 24-24 24z">
+                            </path>
+                        </svg>
+                        Tiếp tục mua sắm
+                    </button>
+                </div>
+            </div>
+            <div class="font-bold text-xl sm:text-2xl mb-3">
+                Đơn hàng
+            </div>
+            <div class="rounded-lg bg-gray-100 text-base">
+                <div class="w-[97%] m-auto">
+                    <div class="flex items-center gap-5 py-2 px-1">
+                        <div class="flex items-center gap-2 sm:text-base text-sm">
+                            <span class="text-gray-600">
+                                Mã đơn hàng
+                            </span>
+                            <span class="font-medium">
+                                {{orderCode}}
+                            </span>
+                        </div>
+                        <div class="flex text-[#FF8900] items-center gap-2 font-bold">
+                            <button class="text-sm cursor-pointer" (click)="goToOrderDetail()">Xem chi tiết
+                            </button>
+                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024"
+                                class="text-xl" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M869 487.8L491.2 159.9c-2.9-2.5-6.6-3.9-10.5-3.9h-88.5c-7.4 0-10.8 9.2-5.2 14l350.2 304H152c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h585.1L386.9 854c-5.6 4.9-2.2 14 5.2 14h91.5c1.9 0 3.8-.7 5.2-2L869 536.2a32.07 32.07 0 0 0 0-48.4z">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="m-auto w-full rounded-sm">
+                        <div *ngIf="products.length > 0" class="p-4 space-y-4 bg-white">
+                            <div *ngFor="let product of products" class="flex gap-2 items-center">
+                                <img [src]='product.mainImageUrl' [alt]='"Ảnh " + product.name'
+                                    class="w-16 h-16 object-cover rounded">
+                                <div class="flex-1">
+                                    <p class="text-gray-900 font-semibold">
+                                        {{product.name}}
+                                    </p>
+                                    <div class="flex items-center mt-1 gap-4">
+                                        <span class="text-gray-500 text-sm">{{product.color}}</span>
+                                        <span class="text-gray-500 text-sm">x{{product.quantity}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-3 sm:p-4 border bg-white border-gray-300 rounded-b-lg mt-4 mb-3">
+                <div class="flex gap-5 items-center justify-center">
+                    <span class="text-gray-600 font-bold text-[16px] sm:text-[18px]">
+                        Tổng tiền
+                    </span>
+                    <div class="flex gap-2 text-[24px] sm:text-[32px] font-bold text-[#FF8900]">
+                        <span>
+                            {{totalPrice | currency:'VND':'symbol':'1.0-0':'vi'}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

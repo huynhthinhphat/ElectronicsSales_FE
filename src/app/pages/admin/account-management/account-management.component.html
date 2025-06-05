@@ -1,0 +1,230 @@
+<div class="p-4">
+    <h2 class="text-2xl text-indigo-600 font-bold mb-5">
+        Tài khoản
+    </h2>
+    <div class="flex justify-between gap-4 mb-3">
+        <div>
+            <div class="relative w-[308px]">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                    class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg" height="1em"
+                    width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z">
+                    </path>
+                </svg>
+                <input type="text" [(ngModel)]="keyWord" (keydown.enter)="searchAccounts()"
+                    class="w-full h-9 pl-10 pr-3 text-sm border border-indigo-500 rounded-2xl focus:outline-none focus:border-indigo-700 bg-white text-gray-900 placeholder:text-gray-500"
+                    placeholder="Nhập tên tài khoản hoặc số điện thoại" [value]="keyWord">
+            </div>
+        </div>
+        <div>
+            <button (click)="reset()"
+                class="bg-white py-1 px-5 border-1 border-indigo-600 text-indigo-600 cursor-pointer rounded-lg">
+                Đặt lại
+            </button>
+        </div>
+    </div>
+    <div>
+        <table class="w-full border-collapse bg-white">
+            <thead class="bg-gray-200 text-gray-700 font-bold">
+                <tr>
+                    <th class="p-4 text-left w-[16.5%]">Họ tên</th>
+                    <th class="p-4 text-left w-[16.5%] ">Tài khoản</th>
+                    <th class="p-4 text-left w-[16.5%] ">Số điện thoại</th>
+                    <th class="p-4 text-center w-[16.5%] ">Giới tính</th>
+                    <th class="p-4 text-center w-[16.5%] ">Vai trò</th>
+                    <th class="p-4 text-center w-[17%] ">Hành động</th>
+                </tr>
+            </thead>
+        </table>
+        <div class="overflow-y-scroll max-h-[400px]">
+            <table class="w-full border-collapse bg-white">
+                <tbody *ngIf="accounts.length === 0">
+                    <tr>
+                        <td colspan="6" class="text-center p-4 text-gray-500">Không có dữ liệu</td>
+                    </tr>
+                </tbody>
+
+                <tbody *ngIf="accounts.length > 0">
+                    <tr *ngFor="let account of accounts" class="border-b hover:bg-gray-50"
+                        style="border-color: rgb(229, 231, 235);">
+                        <td
+                            class="w-[17%] p-4 whitespace-nowrap overflow-hidden overflow-ellipsis max-w-[25vh] font-bold">
+                            {{account.fullName}}
+                        </td>
+                        <td class="w-[16.9%] p-4 whitespace-nowrap overflow-hidden overflow-ellipsis max-w-[20vh]">
+                            {{account.userName}}
+                        </td>
+                        <td class="w-[16.9%] p-4 text-center"
+                            [ngClass]="{'text-gray-500 text-[14px]': account.phoneNumber === 'Chưa cập nhật'}">
+                            {{account.phoneNumber}}
+                        </td>
+                        <td class="w-[17%] p-4 text-center">
+                            <span class="rounded-2xl text-sm" [ngClass]="{
+                                    'text-gray-500 text-[14px]': account.gender === 'Chưa cập nhật',
+                                    'px-4 py-1.5 bg-red-100 text-red-700': account.gender === 'Nữ',
+                                    'px-4 py-1.5 bg-green-100 text-green-700': account.gender === 'Nam'
+                                  }">
+                                {{account.gender}}
+                            </span>
+                        </td>
+                        <td class="w-[16.9%] p-4 text-center">
+                            <span class="px-4 py-1.5 rounded-2xl text-sm" [ngClass]="{
+                                    'bg-blue-100 text-blue-500': account.role === 'User',
+                                    'bg-orange-100 text-orange-500': account.role === 'Admin'
+                                  }">
+                                {{account.role}}
+                            </span>
+                        </td>
+                        <td class="p-4 flex justify-center items-center">
+                            <button (click)="viewPersonalAccount(account.id!)"
+                                class="text-indigo-600 cursor-pointer text-lg hover:scale-110 transition mr-3">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512"
+                                    height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z">
+                                    </path>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="flex justify-between items-center mt-3">
+            <div>
+                {{totalElement}} kết quả
+            </div>
+            <div class="flex gap-2">
+                <select [(ngModel)]="limit" class="focus:bg-white bg-transparent cursor-pointer outline-none"
+                    (ngModelChange)="viewAccounts()">
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="70">70</option>
+                    <option value="100">100</option>
+                </select>
+                <span class="flex items-center">
+                    {{startRecord}}-{{endRecord}} trong {{totalElement}}
+                </span>
+                <button (click)="prePage()" class="w-8 h-8 flex items-center justify-center font-bold rounded-full"
+                    [ngClass]="{'text-gray-400': startRecord == 1, 'text-gray-900 hover:bg-gray-200 cursor-pointer': startRecord > 1}"
+                    [disabled]="startRecord == 1">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button (click)="nextPage()"
+                    class="w-8 h-8 flex items-center justify-center font-bold text-gray-900 hover:bg-gray-200 cursor-pointer rounded-full"
+                    [ngClass]="{'text-gray-400': endRecord >= totalElement, 'text-gray-900 hover:bg-gray-200 cursor-pointer': endRecord < totalElement}"
+                    [disabled]="endRecord >= totalElement">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="isShowDialogDetail" class="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex items-center justify-center z-50"
+        (click)="closeDialogDetail()">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-[550px] relative" (click)="stopPropagation($event)">
+            <div *ngIf="account !== null">
+                <h2 class="text-[28px] font-bold text-gray-900 mb-5">
+                    {{account.fullName}}
+                </h2>
+                <p class="flex items-center gap-2 mb-5">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 496 512"
+                        class="text-gray-400" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M248 104c-53 0-96 43-96 96s43 96 96 96 96-43 96-96-43-96-96-96zm0 144c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm0-240C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 448c-49.7 0-95.1-18.3-130.1-48.4 14.9-23 40.4-38.6 69.6-39.5 20.8 6.4 40.6 9.6 60.5 9.6s39.7-3.1 60.5-9.6c29.2 1 54.7 16.5 69.6 39.5-35 30.1-80.4 48.4-130.1 48.4zm162.7-84.1c-24.4-31.4-62.1-51.9-105.1-51.9-10.2 0-26 9.6-57.6 9.6-31.5 0-47.4-9.6-57.6-9.6-42.9 0-80.6 20.5-105.1 51.9C61.9 339.2 48 299.2 48 256c0-110.3 89.7-200 200-200s200 89.7 200 200c0 43.2-13.9 83.2-37.3 115.9z">
+                        </path>
+                    </svg>
+                    <strong class="text-gray-400 w-32 font-normal">
+                        Tên tài khoản:
+                    </strong>
+                    <span>
+                        {{account.userName}}
+                    </span>
+                </p>
+                <p class="flex items-center gap-2 mb-5">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24"
+                        class="text-gray-400" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="none" d="M0 0h24v24H0V0z"></path>
+                        <path
+                            d="M6.54 5c.06.89.21 1.76.45 2.59l-1.2 1.2c-.41-1.2-.67-2.47-.76-3.79h1.51m9.86 12.02c.85.24 1.72.39 2.6.45v1.49c-1.32-.09-2.59-.35-3.8-.75l1.2-1.19M7.5 3H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.49c0-.55-.45-1-1-1-1.24 0-2.45-.2-3.57-.57a.84.84 0 00-.31-.05c-.26 0-.51.1-.71.29l-2.2 2.2a15.149 15.149 0 01-6.59-6.59l2.2-2.2c.28-.28.36-.67.25-1.02A11.36 11.36 0 018.5 4c0-.55-.45-1-1-1z">
+                        </path>
+                    </svg>
+                    <strong class="text-gray-400 w-32 font-normal">
+                        Số điện thoại:
+                    </strong>
+                    <span [ngClass]="{'text-gray-400 text-[14px]' : account.phoneNumber ==='Chưa cập nhật'}">
+                        {{account.phoneNumber}}
+                    </span>
+                </p>
+                <p class="flex items-center gap-2 mb-5">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 256 256"
+                        class="text-gray-400" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M159.11,142.13a38,38,0,1,0-46.22,0A65.75,65.75,0,0,0,83.2,164.4a6,6,0,0,0,9.6,7.2,54,54,0,0,1,86.4,0,6,6,0,0,0,9.6-7.2A65.75,65.75,0,0,0,159.11,142.13ZM110,112a26,26,0,1,1,26,26A26,26,0,0,1,110,112Zm98-86H64A14,14,0,0,0,50,40V66H32a6,6,0,0,0,0,12H50v44H32a6,6,0,0,0,0,12H50v44H32a6,6,0,0,0,0,12H50v26a14,14,0,0,0,14,14H208a14,14,0,0,0,14-14V40A14,14,0,0,0,208,26Zm2,190a2,2,0,0,1-2,2H64a2,2,0,0,1-2-2V40a2,2,0,0,1,2-2H208a2,2,0,0,1,2,2Z">
+                        </path>
+                    </svg>
+                    <strong class="text-gray-400 w-32 font-normal">
+                        Role:
+                    </strong>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                        {{account.role}}
+                    </span>
+                </p>
+                <p class="flex items-center gap-2 mb-5">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 256 256"
+                        class="text-gray-400" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M104,48c0-24,24-40,24-40s24,16,24,40a24,24,0,0,1-48,0ZM208,96H48a16,16,0,0,0-16,16v23.33c0,17.44,13.67,32.18,31.1,32.66A32,32,0,0,0,96,136a32,32,0,0,0,64,0,32,32,0,0,0,32.9,32c17.43-.48,31.1-15.22,31.1-32.66V112A16,16,0,0,0,208,96Z"
+                            opacity="0.2">
+                        </path>
+                        <path
+                            d="M232,112a24,24,0,0,0-24-24H136V79a32.06,32.06,0,0,0,24-31c0-28-26.44-45.91-27.56-46.66a8,8,0,0,0-8.88,0C122.44,2.09,96,20,96,48a32.06,32.06,0,0,0,24,31v9H48a24,24,0,0,0-24,24v23.33a40.84,40.84,0,0,0,8,24.24V200a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V159.57a40.84,40.84,0,0,0,8-24.24ZM112,48c0-13.57,10-24.46,16-29.79,6,5.33,16,16.22,16,29.79a16,16,0,0,1-32,0ZM40,112a8,8,0,0,1,8-8H208a8,8,0,0,1,8,8v23.33c0,13.25-10.46,24.31-23.32,24.66A24,24,0,0,1,168,136a8,8,0,0,0-16,0,24,24,0,0,1-48,0,8,8,0,0,0-16,0,24,24,0,0,1-24.68,24C50.46,159.64,40,148.58,40,135.33Zm160,96H56a8,8,0,0,1-8-8V172.56A38.77,38.77,0,0,0,62.88,176a39.69,39.69,0,0,0,29-11.31A40.36,40.36,0,0,0,96,160a40,40,0,0,0,64,0,40.36,40.36,0,0,0,4.13,4.67A39.67,39.67,0,0,0,192,176c.38,0,.76,0,1.14,0A38.77,38.77,0,0,0,208,172.56V200A8,8,0,0,1,200,208Z">
+                        </path>
+                    </svg>
+                    <strong class="text-gray-400 w-32 font-normal">
+                        Ngày sinh:
+                    </strong>
+                    <span [ngClass]="{'text-gray-400 text-[14px]' : account.dateOfBirth ==='Chưa cập nhật'}">
+                        {{account.dateOfBirth}}
+                    </span>
+                </p>
+                <p class="flex items-center gap-2 mb-5">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024"
+                        class="text-gray-400" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3-32-32-32zm-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h128v136H184z">
+                        </path>
+                    </svg>
+                    <strong class="text-gray-400 w-32 font-normal">
+                        Giới tính:
+                    </strong>
+                    <span [ngClass]="{'text-gray-400 text-[14px]' : account.gender ==='Chưa cập nhật'}">
+                        {{account.gender}}
+                    </span>
+                </p>
+                <p class="flex items-start gap-2 mb-5">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 384 512"
+                        class="text-gray-400 mt-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z">
+                        </path>
+                    </svg>
+                    <strong class="text-gray-400 w-32 font-normal flex-shrink-0">
+                        Địa chỉ:
+                    </strong>
+                    <span class="flex-grow"
+                        [ngClass]="{'text-gray-400 text-[14px]' : account.address ==='Chưa cập nhật'}">
+                        {{account.address}}
+                    </span>
+                </p>
+            </div>
+            <hr style="border-color: rgb(229, 231, 235);">
+            <div class="flex justify-end mt-4">
+                <button (click)="closeDialogDetail()"
+                    class="cursor-pointer px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-indigo-500 hover:text-white transition duration-200">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,334 @@
+<div *ngIf="!isViewDetail" class="p-4">
+    <div class="flex justify-between">
+        <h2 class="text-2xl text-indigo-600 font-bold mb-5">
+            Đơn hàng
+        </h2>
+    </div>
+    <div class="flex justify-end items-center gap-3"><button (click)="exportExcel()"
+            class="cursor-pointer bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2 transition">
+            <i class="fas fa-file-excel"></i> Xuất Excel
+        </button>
+        <button (click)="reset()" title="Đặt lại"
+            class="bg-white py-1 px-2 border-1 border-indigo-600 text-indigo-600 cursor-pointer rounded-lg hover:text-white hover:bg-indigo-600 transition-all">
+            <i class="fa-solid fa-arrow-rotate-left"></i>
+        </button>
+    </div>
+    <div class="mb-4">
+        <div class="flex flex-col md:flex-row gap-6 mb-4">
+            <div class="w-full md:w-[220px] flex-shrink-0">
+                <div>
+                    <label class="text-base font-bold">Tìm kiếm</label>
+                    <div class="relative w-[220px] mt-1">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg"
+                            height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z">
+                            </path>
+                        </svg>
+                        <input type="text" [(ngModel)]="keyWord" (keydown.enter)="searchOrders()"
+                            class="placeholder:text-gray-500 w-full h-9 pl-10 pr-3 text-sm border border-indigo-500 rounded-2xl focus:outline-none focus:border-indigo-700 bg-white text-gray-900"
+                            placeholder="Nhập mã đơn hoặc sđt..." value="">
+                    </div>
+                </div>
+            </div>
+            <div class="flex-grow">
+                <div class="flex items-end gap-2">
+                    <div class="w-[calc(33.333%-1rem)]">
+                        <label class="text-base font-bold">
+                            Trạng thái
+                        </label>
+                        <select [(ngModel)]="status" (ngModelChange)="viewOrders()"
+                            class="cursor-pointer w-full h-9 pl-3 pr-3 text-sm border border-gray-500 rounded-xl  focus:outline-none focus:border-indigo-700 bg-white text-gray-900 mt-1">
+                            <option value="">Tất cả</option>
+                            <option value="WAITING_FOR_PAYMENT">Đang đợi thanh toán</option>
+                            <option value="PENDING">Đang chờ xử lý</option>
+                            <option value="SHIPPING">Đang vận chuyển</option>
+                            <option value="COMPLETED">Đã hoàn thành</option>
+                            <option value="CANCELED">Đã hủy</option>
+                            <option value="RETURNING">Đang hoàn hàng</option>
+                            <option value="REFUNDED">Đã hoàn tiền</option>
+                        </select>
+                    </div>
+                    <div class="w-[calc(33.333%-1rem)]">
+                        <label class="text-base font-bold">Loại GD</label>
+                        <select [(ngModel)]="transaction" (ngModelChange)="viewOrders()"
+                            class="cursor-pointer w-full h-9 pl-3 pr-3 text-sm border border-gray-500 rounded-xl  focus:outline-none focus:border-indigo-700 bg-white text-gray-900 mt-1">
+                            <option value="">Tất cả</option>
+                            <option value="COD">COD</option>
+                            <option value="MOMO">BANKING (MOMO)</option>
+                        </select>
+                    </div>
+                    <div class="w-[calc(33.333%-1rem)]">
+                        <label class="text-base font-bold">ĐVVC</label>
+                        <select [(ngModel)]="delivery" (ngModelChange)="viewOrders()"
+                            class="cursor-pointer w-full h-9 pl-3 pr-3 text-sm border border-gray-500 rounded-xl  focus:outline-none focus:border-indigo-700 bg-white text-gray-900 mt-1">
+                            <option value="">Tất cả</option>
+                            <option value="FAST_DELIVERY">Giao hàng nhanh</option>
+                            <option value="VIETTEL_POST">Viettel Post</option>
+                            <option value="JT_EXPRESS">J&T Express</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-base font-bold">Thời gian</label>
+                        <div class="flex gap-2">
+                            <input type="date" title="Ngày bắt đầu" [(ngModel)]="startDay" name="startDay"
+                                [max]="endDay" (ngModelChange)="viewOrders()"
+                                class="bg-white cursor-pointer px-3 py-1.5 border border-gray-500 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                            <input type="date" title="Ngày kết thúc" [(ngModel)]="endDay" name="endDay" [max]="maxDay"
+                                (ngModelChange)="viewOrders()"
+                                class="bg-white cursor-pointer px-3 py-1.5 border border-gray-500 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <table class="w-full border-collapse bg-white">
+            <thead class="bg-gray-200 text-gray-700 font-bold">
+                <tr>
+                    <th class="p-4 text-left w-[22%]">Mã đơn hàng</th>
+                    <th class="p-4 text-left w-[13%]">Số ĐT</th>
+                    <th class="p-4 text-left w-[13%]">Tổng tiền</th>
+                    <th class="p-4 text-left w-[13%]">Loại GD</th>
+                    <th class="p-4 text-left w-[13%]">PTVC</th>
+                    <th class="p-4 text-left w-[13%]">Trạng thái</th>
+                    <th class="py-4 text-center w-[13%]">Hành động</th>
+                </tr>
+            </thead>
+        </table>
+        <div class="overflow-y-auto max-h-[400px]">
+            <table class="w-full border-collapse bg-white">
+                <tbody *ngIf="orders.length === 0">
+                    <tr>
+                        <td colspan="6" class="text-center p-4 text-gray-500">Không có dữ liệu</td>
+                    </tr>
+                </tbody>
+
+                <tbody *ngIf="orders.length > 0">
+                    <tr *ngFor="let order of orders" class="border-b hover:bg-gray-50"
+                        style="border-color: rgb(229, 231, 235);">
+                        <td
+                            class="w-[23%] p-4 whitespace-nowrap overflow-hidden overflow-ellipsis max-w-[25vh] font-bold">
+                            {{order.orderCode}}
+                        </td>
+                        <td class="w-[14%]">
+                            {{order.phoneNumber}}
+                        </td>
+                        <td class="w-[9%] text-center">
+                            {{order.totalPrice| currency : 'VND':'symbol':'1.0-0':'vi'}}
+                        </td>
+                        <td class="w-[16%] text-center">
+                            {{order.paymentMethod}}
+                        </td>
+                        <td *ngIf="order.delivery === 'FAST_DELIVERY'" class="w-[13%] p-4">
+                            GHN
+                        </td>
+                        <td *ngIf="order.delivery === 'VIETTEL_POST'" class="w-[13%] p-4">
+                            Viettel Post
+                        </td>
+                        <td *ngIf="order.delivery === 'JT_EXPRESS'" class="w-[13%] p-4">
+                            J&T Express
+                        </td>
+                        <td *ngIf="order.status === 'WAITING_FOR_PAYMENT'" class="w-[14%] p-4 text-pink-600">
+                            Chờ th.toán
+                        </td>
+                        <td *ngIf="order.status === 'PENDING'" class="w-[14%] p-4 text-orange-600">
+                            Đang xử lý
+                        </td>
+                        <td *ngIf="order.status === 'SHIPPING'" class="w-[14%] p-4 text-blue-600">
+                            Đang giao
+                        </td>
+                        <td *ngIf="order.status === 'COMPLETED'" class="w-[14%] p-4 text-green-600">
+                            Hoàn thành
+                        </td>
+                        <td *ngIf="order.status === 'CANCELED'" class="w-[14%] p-4 text-red-600">
+                            Đã hủy
+                        </td>
+                        <td *ngIf="order.status === 'RETURNING'" class="w-[14%] p-4 text-red-600">
+                            Hoàn hàng
+                        </td>
+                        <td *ngIf="order.status === 'REFUNDED'" class="w-[14%] p-4 text-green-600">
+                            Đã hoàn tiền
+                        </td>
+                        <td class="p-4 w-[14%]">
+                            <div class="flex gap-2">
+                                <button (click)="viewOrderDetail(order.id!)"
+                                    class="text-indigo-600 cursor-pointer text-lg hover:scale-110 transition mr-3">
+                                    <svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                        viewBox="0 0 576 512" height="1em" width="1em"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z">
+                                        </path>
+                                    </svg>
+                                </button>
+                                <button
+                                    *ngIf="order.status === 'PENDING' || order.status === 'SHIPPING' || order.status === 'RETURNING'"
+                                    (click)="openDialogUpdate(order)"
+                                    class="cursor-pointer text-yellow-500 text-lg hover:scale-110 transition mr-3">
+                                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24"
+                                        height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill="none" d="M0 0h24v24H0z"></path>
+                                        <path
+                                            d="M3 21h3.75L17.81 9.94l-3.75-3.75L3 17.25V21zm2-2.92l9.06-9.06.92.92L5.92 19H5v-.92zM18.37 3.29a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83a.996.996 0 000-1.41l-2.34-2.34z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="flex justify-between items-center mt-3">
+            <div>
+                {{totalElement}} kết quả
+            </div>
+            <div class="flex gap-2">
+                <select [(ngModel)]="limit" class="focus:bg-white bg-transparent cursor-pointer outline-none"
+                    (ngModelChange)="viewOrders()">
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="70">70</option>
+                    <option value="100">100</option>
+                </select>
+                <span class="flex items-center">
+                    {{startRecord}}-{{endRecord}} trong {{totalElement}}
+                </span>
+                <button (click)="prePage()" class="w-8 h-8 flex items-center justify-center font-bold rounded-full"
+                    [ngClass]="{'text-gray-400': startRecord == 1, 'text-gray-900 hover:bg-gray-200 cursor-pointer': startRecord > 1}"
+                    [disabled]="startRecord == 1">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button (click)="nextPage()"
+                    class="w-8 h-8 flex items-center justify-center font-bold text-gray-900 hover:bg-gray-200 cursor-pointer rounded-full"
+                    [ngClass]="{'text-gray-400': endRecord >= totalElement, 'text-gray-900 hover:bg-gray-200 cursor-pointer': endRecord < totalElement}"
+                    [disabled]="endRecord >= totalElement">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="isViewDetail" class="p-6 bg-white rounded-md shadow-md max-w mt-4 border border-gray-200">
+    <h2 class="text-2xl text-indigo-600 font-bold mb-5">
+        Đơn hàng
+    </h2>
+    <div class="text-sm text-gray-800 space-y-3 mb-6">
+        <h3 class="font-bold mb-2 text-l">Thông tin đơn hàng</h3>
+        <div class="gap-y-1">
+            <div class="flex mt-4">
+                <div class="w-40 font-bold text-l">Mã đơn hàng:</div>
+                <div class="text-l font-medium">{{order?.orderCode}}</div>
+            </div>
+            <div class="flex mt-4">
+                <div class="w-40 font-bold text-l">Số điện thoại:</div>
+                <div class="text-l font-medium">{{order?.phoneNumber}}</div>
+            </div>
+            <div class="flex mt-4">
+                <div class="w-40 font-bold text-l">Tổng tiền:</div>
+                <div class="text-l font-medium">{{order?.totalPrice | currency : 'VND':'symbol':'1.0-0':'vi'}}</div>
+            </div>
+            <div class="flex mt-4">
+                <div class="w-40 font-bold text-l">Trạng thái:</div>
+                <div class="text-l font-medium">
+                    <span *ngIf="order?.status === 'PENDING'"
+                        class="px-2 py-1 rounded-md bg-orange-100 text-orange-600">
+                        Đang xử lý
+                    </span>
+                    <span *ngIf="order?.status === 'SHIPPING'" class="px-2 py-1 rounded-md bg-blue-100 text-blue-600">
+                        Đang vận chuyển
+                    </span>
+                    <span *ngIf="order?.status === 'WAITING_FOR_PAYMENT'"
+                        class="px-2 py-1 rounded-md bg-indigo-100 text-indigo-600">
+                        Đợi thanh toán
+                    </span>
+                    <span *ngIf="order?.status === 'COMPLETED'"
+                        class="px-2 py-1 rounded-md bg-green-100 text-green-600">
+                        Hoàn thành
+                    </span>
+                    <span *ngIf="order?.status === 'CANCELED'" class="px-2 py-1 rounded-md bg-red-100 text-red-600">
+                        Đã hủy
+                    </span>
+                    <span *ngIf="order?.status === 'RETURNING'" class="px-2 py-1 rounded-md bg-red-100 text-red-600">
+                        Đang hoàn hàng
+                    </span>
+                    <span *ngIf="order?.status === 'REFUNDED'" class="px-2 py-1 rounded-md bg-red-100 text-green-600">
+                        Đã hoàn tiền
+                    </span>
+                </div>
+            </div>
+            <div class=" flex mt-4">
+                <div class="w-40 font-bold text-l">Loại giao dịch:</div>
+                <div class="text-l font-medium">{{order?.paymentMethod}}</div>
+            </div>
+            <div class="flex  mt-4">
+                <div class="w-40 font-bold text-l">Đơn vị vận chuyển:</div>
+                <div *ngIf="order?.delivery === 'FAST_DELIVERY'" class="text-l font-medium">Giao hàng nhanh</div>
+                <div *ngIf="order?.delivery === 'VIETTEL_POST'" class="text-l font-medium">Viettel Post</div>
+                <div *ngIf="order?.delivery === 'JT_EXPRESS'" class="text-l font-medium">J&T Express</div>
+            </div>
+            <div class="col-span-2 flex mt-4">
+                <div class="w-40 font-bold text-l">Địa chỉ:</div>
+                <div class="text-l font-medium">{{order?.address}}</div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-6">
+        <h3 class="font-bold mb-2 text-l mt-4">Chi tiết đơn hàng</h3>
+        <div class="max-h-64 border border-gray-200 rounded-md">
+            <div class="flex text-sm font-semibold text-gray-700 bg-gray-100 sticky top-0 z-10">
+                <div class="w-1/6 p-2">Mã sản phẩm</div>
+                <div class="w-1/6 p-2">Tên sản phẩm</div>
+                <div class="w-1/6 p-2">Màu sắc</div>
+                <div class="w-1/6 p-2">Đơn giá</div>
+                <div class="w-1/6 p-2">Số lượng</div>
+                <div class="w-1/6 p-2">Thành tiền</div>
+            </div>
+            <div *ngFor="let item of order?.items" class="flex text-sm text-gray-800 border-t">
+                <div class="w-1/6 p-2">{{ item.sku }}</div>
+                <div class="w-1/6 p-2">{{ item.name }}</div>
+                <div class="w-1/6 p-2">{{ item.color }}</div>
+                <div class="w-1/6 p-2">{{ item.priceAtTime | currency : 'VND':'symbol':'1.0-0':'vi'}}</div>
+                <div class="w-1/6 p-2">{{ item.quantity }}</div>
+                <div class="w-1/6 p-2">{{ item.totalPrice | currency : 'VND':'symbol':'1.0-0':'vi'}}</div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-6 flex justify-end gap-2">
+        <button (click)="closeViewDetail()" type="button"
+            class="cursor-pointer px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+            Quay lại
+        </button>
+    </div>
+</div>
+<div *ngIf="isShowDialogUpdate" (click)="closeDialogUpdate()"
+    class="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex justify-center items-center">
+    <div (click)="stopPropagation($event)" class="bg-white p-6 rounded-xl w-[500px] h-auto shadow-2xl relative">
+        <h2 class="text-[24px] font-bold text-gray-800 mb-2">Cập nhật trạng thái đơn hàng</h2>
+        <label class="block text-lg font-semibold text-gray-700">Trạng thái
+            <span class="text-red-500">*</span>
+        </label>
+        <select [(ngModel)]="newStatus" (ngModelChange)="checkChangeStatus()"
+            class="w-full p-3 bg-gray-100 rounded-lg mt-2 focus:ring focus:ring-indigo-400 outline-none text-sm"
+            name="status">
+            <option value="">Trạng thái mới đơn hàng</option>
+            <option *ngIf="order?.status === 'PENDING'" value="SHIPPING">Đã giao</option>
+            <option *ngIf="order?.status === 'RETURNING'" value="REFUNDED">Đã hoàn tiền</option>
+            <option *ngIf="order?.status !== 'RETURNING'" value="CANCELED">Hủy</option>
+        </select>
+        <div class="flex justify-end mt-6 gap-3">
+            <button (click)="closeDialogUpdate()"
+                class="px-4 py-1 cursor-pointer text-sm font-semibold border-gray-400 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition duration-150">
+                Hủy
+            </button>
+            <button class="px-6 py-2 text-sm font-semibold rounded-lg transition duration-300" (click)="update()"
+                [ngClass]="{'border border-indigo-600 bg-[#FFF] text-indigo-600 cursor-pointer hover:text-white hover:bg-indigo-600':isChange, 'text-white bg-gray-300 cursor-not-allowed':!isChange}"
+                [disabled]="!isChange">
+                Lưu
+            </button>
+        </div>
+    </div>
+</div>

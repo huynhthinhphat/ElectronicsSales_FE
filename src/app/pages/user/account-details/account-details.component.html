@@ -1,0 +1,145 @@
+<h1 class="text-xl sm:text-2xl font-bold mb-2 hidden lg:block">Thông tin cá nhân</h1>
+<div class="px-6 pt-1 pb-4 bg-white rounded-lg">
+    <div class="flex justify-end h-[5vh] mt-2">
+        <button *ngIf="!isAllowEdit" type="button" (click)="allowEdit()"
+            class="text-[#FF8900] text-[20px] hover:cursor-pointer border-none">
+            <i class="fa-solid fa-user-pen"></i>
+        </button>
+        <button *ngIf="isAllowEdit" type="button" (click)="allowEdit()"
+            class="sm:w-auto border border-gray-300 p-4 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 hover:cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+            Hủy
+        </button>
+    </div>
+    <div class="flex gap-15">
+        <div class="w-[35%] flex flex-col gap-3.5">
+            <div class="cursor-pointer flex justify-center items-center">
+                <img [src]="avatarUrl" referrerpolicy="no-referrer" alt="Avatar"
+                    class="h-full max-w-[45vh] object-cover rounded-lg">
+            </div>
+            <div class="text-xs text-gray-500 font-medium text-center">
+                Dung lượng file tối đa 2MB<br>Định dạng: .JPG, .PNG, .WEBP
+            </div>
+            <div>
+                <form>
+                    <input type="file" accept="image/*" #fileInput hidden (change)="onFileSelected($event)">
+                    <button
+                        class="w-full flex items-center justify-center gap-2 border-2 border-gray-300 p-2 rounded-lg hover:bg-gray-50 transition-colors hover:cursor-pointer"
+                        (click)="fileInput.click()">
+                        <i class="fa-solid fa-upload"></i>
+                        Tải ảnh lên
+                    </button>
+                </form>
+            </div>
+            <div>
+                <a href="/verify-email"
+                    class="w-full flex items-center justify-center gap-2 border-2 border-gray-300 p-2 rounded-lg hover:bg-gray-50 transition-colors hover:cursor-pointer">
+                    <i class="fa-solid fa-key"></i>
+                    Đổi mật khẩu
+                </a>
+            </div>
+        </div>
+        <div class="w-[65%] flex flex-col gap-3.5">
+            <div class="flex">
+                <div class="text-gray-500 text-sm flex items-center w-[4vh]">
+                    <i class="fa-regular fa-user"></i>
+                </div>
+                <div class="w-[25vh] sm:w-32 text-gray-500 text-sm flex items-center gap-3">
+                    Họ và tên:
+                </div>
+                <input *ngIf="!isAllowEdit" type="text" [placeholder]="fullName"
+                    class="w-[50%] text-sm break-words outline-none border border-[#fff] rounded-lg p-2"
+                    [ngClass]="getClass(fullName)" [readOnly]="!isAllowEdit">
+                <input *ngIf="isAllowEdit" type="text" #inputFullName [value]="fullName"
+                    class="w-[50%] text-sm font-semibold break-words outline-none border rounded-lg p-2 border-[#FF8900] focus:ring-orange-500 focus:ring-2">
+            </div>
+            <div class="flex">
+                <div class="text-gray-500 text-sm flex items-center w-[4vh]">
+                    <i class="fa-regular fa-envelope"></i>
+                </div>
+                <div class="w-[25vh] sm:w-32 text-gray-500 text-sm flex items-center gap-3">
+                    Email:
+                </div>
+                <input *ngIf="!isAllowEdit" type="text" [placeholder]="email"
+                    class="w-[70%] text-sm break-words outline-none border border-[#fff] rounded-lg p-2"
+                    [ngClass]="getClass(email)" [readOnly]="!isAllowEdit">
+                <input *ngIf="isAllowEdit" type="text" #inputEmail [value]="email"
+                    class="w-[50%] text-sm font-semibold break-words outline-none border rounded-lg p-2 border-[#FF8900] focus:ring-orange-500 focus:ring-2">
+            </div>
+            <div class="flex">
+                <div class="text-gray-500 text-sm flex items-center w-[4vh]">
+                    <i class="fa-solid fa-phone-flip"></i>
+                </div>
+                <div class="w-[25vh] sm:w-32 text-gray-500 text-sm flex items-center gap-3">
+                    Số điện thoại:
+                </div>
+                <input *ngIf="!isAllowEdit" type="text" [placeholder]="phoneNumber"
+                    class="w-[50%] text-sm break-words outline-none border border-[#fff] rounded-lg p-2"
+                    [ngClass]="getClass(phoneNumber)" [readOnly]="!isAllowEdit">
+                <input *ngIf="isAllowEdit" type="text" #inputPhoneNumber [value]="phoneNumber"
+                    class="w-[50%] text-sm font-semibold break-words outline-none border rounded-lg p-2 border-[#FF8900] focus:ring-orange-500 focus:ring-2">
+            </div>
+            <div class="flex">
+                <div class="text-gray-500 text-sm flex items-center w-[4vh]">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <div class="w-[25vh] sm:w-32 text-gray-500 text-sm flex items-center gap-3">
+                    Ngày sinh:
+                </div>
+                <input *ngIf="!isAllowEdit" type="text" [placeholder]="dateOfBirth"
+                    class="w-[50%] text-sm break-words outline-none border border-[#fff] rounded-lg p-2"
+                    [ngClass]="getClass(dateOfBirth)" [readOnly]="!isAllowEdit">
+                <input *ngIf="isAllowEdit" type="date" #inputDateOfBirth [value]="dateOfBirth"
+                    class="cursor-pointer w-[50%] text-sm font-semibold break-words outline-none border rounded-lg p-2 border-[#FF8900] focus:ring-orange-500 focus:ring-2">
+            </div>
+            <div class="flex">
+                <div class="text-gray-500 text-sm flex items-center w-[4vh]">
+                    <i class="fa-solid fa-venus-mars"></i>
+                </div>
+                <div class="w-[25vh] sm:w-32 text-gray-500 text-sm flex items-center gap-3">
+                    Giới tính:
+                </div>
+                <select *ngIf="isAllowEdit" [(ngModel)]="gender"
+                    class="cursor-pointer w-[50%] font-semibold text-sm break-words outline-none border border-[#FF8900] rounded-lg py-2 px-1.5">
+                    <option value="Chưa cập nhật">Chọn giới tính</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                </select>
+                <div *ngIf="!isAllowEdit" class="w-[50%] text-sm break-words outline-none p-2"
+                    [ngClass]="{'text-gray-400': gender === 'Chưa cập nhật', 'font-semibold': gender !== 'Chưa cập nhật'}">
+                    {{gender}}
+                </div>
+            </div>
+            <div class="flex">
+                <div class="text-gray-500 text-sm flex items-center w-[4vh]">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                </div>
+                <div class="w-[25vh] sm:w-32 text-gray-500 text-sm flex items-center gap-3">
+                    Địa chỉ:
+                </div>
+                <div>
+                    <div *ngIf="isAllowEdit" class="w-[60vh] text-sm break-words">
+                        <small class="text-red-500">*Vui lòng đợi vài giây để hệ thống tìm kiếm địa chỉ phù hợp</small>
+                        <input type="text" (input)="getLocations($event)" placeholder="Nhập địa chỉ..."
+                            list="suggestion-list" [value]="address"
+                            class="w-[76%] text-sm font-semibold break-words outline-none border rounded-lg p-2 border-[#FF8900] focus:ring-orange-500 focus:ring-2" />
+                        <datalist id="suggestion-list" *ngIf="suggestions.length > 0">
+                            <option *ngFor="let s of suggestions" [value]="s"></option>
+                        </datalist>
+                    </div>
+                    <div *ngIf="!isAllowEdit" class="w-[60vh] pl-2 text-sm break-words"
+                        [ngClass]="{'text-gray-400': address === 'Chưa cập nhật', 'font-semibold': address !== 'Chưa cập nhật'}">
+                        {{address}}
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button *ngIf="isAllowEdit" (click)="isSave()" type="button"
+                    class="sm:w-auto border-2 border-[#FF8900] bg-white text-[#FF8900] cursor-pointer px-3 py-1 rounded-lg hover:bg-orange-500 hover:text-[#fff] transition-colors flex items-center gap-2">
+                    <i class="fa-regular fa-floppy-disk"></i>
+                    Lưu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,486 @@
+<div *ngIf="!isRedirectEditPage" class="p-4">
+    <h2 class="text-2xl text-indigo-600 font-bold mb-9">
+        Sản phẩm
+    </h2>
+    <div class="flex justify-end gap-2">
+        <button (click)="exportExcel()"
+            class="cursor-pointer bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium flex items-center gap-2 transition">
+            <i class="fas fa-file-excel"></i> Xuất Excel
+        </button>
+        <button (click)="redirectEditPage(null, 2)"
+            class="cursor-pointer bg-[#40A800] text-white px-3 py-1.5 rounded-md flex items-center justify-center gap-2 hover:bg-green-700 transition">
+            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="text-xl"
+                height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M346.5 240H272v-74.5c0-8.8-7.2-16-16-16s-16 7.2-16 16V240h-74.5c-8.8 0-16 6-16 16s7.5 16 16 16H240v74.5c0 9.5 7 16 16 16s16-7.2 16-16V272h74.5c8.8 0 16-7.2 16-16s-7.2-16-16-16z">
+                </path>
+                <path
+                    d="M256 76c48.1 0 93.3 18.7 127.3 52.7S436 207.9 436 256s-18.7 93.3-52.7 127.3S304.1 436 256 436c-48.1 0-93.3-18.7-127.3-52.7S76 304.1 76 256s18.7-93.3 52.7-127.3S207.9 76 256 76m0-28C141.1 48 48 141.1 48 256s93.1 208 208 208 208-93.1 208-208S370.9 48 256 48z">
+                </path>
+            </svg>
+            Thêm
+        </button>
+        <button (click)="reset()" title="Đặt lại"
+            class="bg-white py-1 px-3 border-1 border-indigo-600 text-indigo-600 cursor-pointer rounded-lg hover:text-white hover:bg-indigo-600 transition-all">
+            <i class="fa-solid fa-arrow-rotate-left"></i>
+        </button>
+    </div>
+    <div class="mb-4">
+        <div class="flex flex-col md:flex-row gap-6 mb-4">
+            <div class="w-full md:w-[250px] flex-shrink-0">
+                <div>
+                    <label class="text-base font-bold">
+                        Tìm kiếm
+                    </label>
+                    <div class="relative w-[250px] mt-1">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg"
+                            height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z">
+                            </path>
+                        </svg>
+                        <input type="text" [(ngModel)]="search" (keydown.enter)="searchProducts()"
+                            class="placeholder:text-gray-500 w-full h-9 pl-10 pr-3 text-sm border border-indigo-500 rounded-2xl focus:outline-none focus:border-indigo-700 bg-white text-gray-900"
+                            placeholder="Nhập mã hoặc tên sản phẩm..." value="">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="flex items-end gap-2">
+                    <div>
+                        <label class="text-base font-bold">
+                            Thể loại
+                        </label>
+                        <select [(ngModel)]="categoryId" (ngModelChange)="getAllProducts()"
+                            class="w-full h-9 pl-3 pr-3 text-sm border border-gray-500 rounded-xl focus:outline-none focus:border-indigo-700 bg-white text-gray-900 mt-1">
+                            <option value="">Tất cả</option>
+                            <option *ngFor="let category of categories" [value]="category.id">{{category.name}}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-base font-bold">
+                            Thương hiệu
+                        </label>
+                        <select [(ngModel)]="brandId" (ngModelChange)="getAllProducts()"
+                            class="w-full h-9 pl-3 text-sm border border-gray-500 rounded-xl focus:outline-none focus:border-indigo-700 bg-white text-gray-900 mt-1">
+                            <option value="">Tất cả</option>
+                            <option *ngFor="let brand of brands" [value]="brand.id">{{brand.name}}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-base font-bold">
+                            Sao
+                        </label>
+                        <select [(ngModel)]="star" (ngModelChange)="getAllProducts()"
+                            class="w-full h-9 pl-3 pr-3 text-sm border border-gray-500 rounded-xl focus:outline-none focus:border-indigo-700 bg-white text-gray-900 mt-1">
+                            <option value="">Tất cả</option>
+                            <option value="4-5">4 - 5 sao</option>
+                            <option value="2-3">2 - 3 sao</option>
+                            <option value="1-2">1 - 2 sao</option>
+                            <option value="0-1">Bé hơn 1 sao</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-base font-bold">Thời gian</label>
+                        <div class="flex gap-2">
+                            <input type="date" title="Ngày bắt đầu" [(ngModel)]="startDay" name="startDay"
+                                [max]="endDay" (ngModelChange)="getAllProducts()"
+                                class="bg-white cursor-pointer px-3 py-1.5 border border-gray-500 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                            <input type="date" title="Ngày kết thúc" [(ngModel)]="endDay" name="endDay" [max]="maxDay"
+                                (ngModelChange)="getAllProducts()"
+                                class="bg-white cursor-pointer px-3 py-1.5 border border-gray-500 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="overflow-x-auto mt-5">
+        <table class="w-full border-collapse shadow-lg bg-white">
+            <thead>
+                <tr class="bg-gray-50 text-gray-700 font-bold">
+                    <th class="p-4 text-left whitespace-nowrap">
+                        Mã
+                    </th>
+                    <th class="p-4 text-left whitespace-nowrap">
+                        Tên
+                    </th>
+                    <th class="p-4 text-left whitespace-nowrap">
+                        Tồn kho
+                    </th>
+                    <th class="p-4 text-left whitespace-nowrap">
+                        Danh mục
+                    </th>
+                    <th class="p-4 text-left whitespace-nowrap">
+                        Thương hiệu
+                    </th>
+                    <th class="p-4 text-left whitespace-nowrap flex w-20">
+                        <div *ngIf="orderBy !== 'priceAsc' && orderBy !== 'priceDesc'" title="Sắp xếp giá gốc"
+                            class="flex items-center cursor-pointer text-blue-500 select-none"
+                            (click)="changeOrderBy(3)">
+                            Giá gốc
+                        </div>
+                        <div *ngIf="orderBy === 'priceAsc'" title="Tăng dần"
+                            class="flex items-center cursor-pointer text-blue-500 select-none"
+                            (click)="changeOrderBy(4)">
+                            Giá gốc
+                            <i class="fa-solid fa-arrow-up-wide-short"></i>
+                        </div>
+                        <div *ngIf="orderBy === 'priceDesc'" title="Giảm dần"
+                            class="flex items-center cursor-pointer text-blue-500 select-none"
+                            (click)="changeOrderBy(0)">
+                            Giá gốc
+                            <i class="fa-solid fa-arrow-down-wide-short"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left w-30">
+                        <div *ngIf="orderBy !== 'priceDiscountAsc' && orderBy !== 'priceDiscountDesc'"
+                            title="Sắp xếp giá giảm" class="flex items-center cursor-pointer text-blue-500 select-none"
+                            (click)="changeOrderBy(1)">
+                            Giá giảm
+                        </div>
+                        <div *ngIf="orderBy === 'priceDiscountAsc'" title="Tăng dần"
+                            class="flex items-center cursor-pointer text-blue-500 select-none"
+                            (click)="changeOrderBy(2)">
+                            Giá giảm
+                            <i class="fa-solid fa-arrow-up-wide-short"></i>
+                        </div>
+                        <div *ngIf="orderBy === 'priceDiscountDesc'" title="Giảm dần"
+                            class="flex items-center cursor-pointer text-blue-500 select-none"
+                            (click)="changeOrderBy(0)">
+                            Giá giảm
+                            <i class="fa-solid fa-arrow-down-wide-short"></i>
+                        </div>
+                    </th>
+                    <th class="p-4 text-left">
+                        Sao
+                    </th>
+                    <th class="p-4 text-left">
+                        H.động
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let product of products" class="border-b hover:bg-gray-200"
+                    style="border-color: rgb(229, 231, 235);">
+                    <td class="p-4 text-left whitespace-nowrap overflow-hidden overflow-ellipsis max-w-[20vh]">
+                        {{product.sku}}
+                    </td>
+                    <td class="p-4 text-left whitespace-nowrap overflow-hidden overflow-ellipsis max-w-[20vh]">
+                        <strong class="font-bold">
+                            {{product.name}}
+                        </strong>
+                    </td>
+                    <td class="p-4 text-center whitespace-nowrap overflow-hidden overflow-ellipsis max-w-[15vh]">
+                        {{product.stock| currency : ' ':'symbol':'1.0-0':'vi'}}
+                    </td>
+                    <td class="p-4 text-left whitespace-nowrap overflow-hidden overflow-ellipsis max-w-[15vh]">
+                        {{product.category}}
+                    </td>
+                    <td class="p-4 text-left whitespace-nowrap overflow-hidden overflow-ellipsis max-w-[15vh]">
+                        {{product.brand}}
+
+                    </td>
+                    <td class="p-4 text-center">
+                        <span class="text-gray-700">
+                            {{product.price| currency : 'VND':'symbol':'1.0-0':'vi'}}
+                        </span>
+                    </td>
+                    <td class="p-4 text-center">
+                        <span class="text-gray-700">
+                            {{product.discountPrice | currency : 'VND':'symbol':'1.0-0':'vi'}}
+                        </span>
+                    </td>
+                    <td class="p-4 text-left">
+                        <span class="text-gray-700">
+                            {{product.star || 0}}<i class="fa-solid fa-star text-yellow-500"></i>
+                        </span>
+                    </td>
+                    <td class="p-4 flex justify-center">
+                        <div class="flex gap-2">
+                            <button (click)="redirectEditPage(product, 1)"
+                                class="cursor-pointer text-yellow-500 text-lg hover:scale-110 transition mr-3">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24"
+                                    height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="none" d="M0 0h24v24H0z"></path>
+                                    <path
+                                        d="M3 21h3.75L17.81 9.94l-3.75-3.75L3 17.25V21zm2-2.92l9.06-9.06.92.92L5.92 19H5v-.92zM18.37 3.29a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83a.996.996 0 000-1.41l-2.34-2.34z">
+                                    </path>
+                                </svg>
+                            </button>
+                            <button (click)="showDialogDelete(product.id!, product.name!)"
+                                class="cursor-pointer text-red-600 text-lg hover:scale-110 transition">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                                    height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="flex justify-between items-center mt-3">
+        <div>
+            {{products.length}} kết quả
+        </div>
+        <div class="flex gap-2">
+            <select [(ngModel)]="limit" class="focus:bg-white bg-transparent cursor-pointer outline-none"
+                (ngModelChange)="getAllProducts()">
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="70">70</option>
+                <option value="100">100</option>
+            </select>
+            <span class="flex items-center">
+                {{startRecord}}-{{endRecord}} trong {{products.length}}
+            </span>
+            <button (click)="prePage()" class="w-8 h-8 flex items-center justify-center font-bold rounded-full"
+                [ngClass]="{'text-gray-400': startRecord == 1, 'text-gray-900 hover:bg-gray-200 cursor-pointer': startRecord > 1}"
+                [disabled]="startRecord == 1">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button (click)="nextPage()"
+                class="w-8 h-8 flex items-center justify-center font-bold text-gray-900 hover:bg-gray-200 cursor-pointer rounded-full"
+                [ngClass]="{'text-gray-400': endRecord >= totalElement, 'text-gray-900 hover:bg-gray-200 cursor-pointer': endRecord < totalElement}"
+                [disabled]="endRecord >= totalElement">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<div *ngIf="isRedirectEditPage" class="bg-gray-100 min-h-screen ml-4">
+    <h2 class="text-2xl text-indigo-600 font-bold mb-4">
+        Sản phẩm
+    </h2>
+    <form class="max-w-6xl bg-white p-6 rounded-lg shadow-md flex flex-col gap-6" enctype="multipart/form-data">
+        <div class="flex gap-6">
+            <div class="w-3/4">
+                <h3 class="text-lg font-semibold mb-4">{{title}}</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium">
+                            Mã sản phẩm
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" class="bg-gray-100 p-2 rounded-lg w-full" name="productCode"
+                            [(ngModel)]="product!.sku">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">
+                            Tên sản phẩm
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" class="bg-gray-100 p-2 rounded-lg w-full" name="productName"
+                            [(ngModel)]="product!.name">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">
+                            Số lượng
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" class="bg-gray-100 p-2 rounded-lg w-full" name="quantity" min="1"
+                            [(ngModel)]="product!.stock" (blur)="checkStock()">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label class="block text-sm font-medium">
+                            Loại sản phẩm
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <select [(ngModel)]="categoryId" name="categoryId" class="bg-gray-100 p-2 rounded-lg w-full">
+                            <option value="">Chọn thể loại</option>
+                            <option *ngFor="let category of categories" [value]="category.id">
+                                {{category.name}}
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">
+                            Thương hiệu
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <select [(ngModel)]="brandId" name="brandId" class="bg-gray-100 p-2 rounded-lg w-full">
+                            <option value="">Chọn thương hiệu</option>
+                            <option *ngFor="let brand of brands" [value]="brand.id">
+                                {{brand.name}}
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">
+                            Thời gian bảo hành (tháng)
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" class="bg-gray-100 p-2 rounded-lg w-full" name="warranty"
+                            [(ngModel)]="product!.warranty" (blur)="checkWarranty()">
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 mt-4">
+                    <div>
+                        <label class="block text-sm font-medium">
+                            Giá
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" class="bg-gray-100 p-2 rounded-lg w-full" name="price" min="0"
+                            [(ngModel)]="product!.price" (ngModelChange)="updateDiscountPrice()"
+                            (blur)="checkDiscountPriceAndPrice()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">
+                            Phần trăm giảm giá (%)
+                        </label>
+                        <input type="number" class="bg-gray-100 p-2 rounded-lg w-full" name="discount" min="0" max="100"
+                            [(ngModel)]="product!.discount" (ngModelChange)="updateDiscountPrice()"
+                            (blur)="checkDiscountPriceAndPrice()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">
+                            Giá giảm
+                        </label>
+                        <input type="text" class="bg-gray-300 p-2 rounded-lg w-full" readonly name="discountPrice"
+                            [(ngModel)]="product!.discountPrice">
+                    </div>
+                </div>
+                <div class="mt-4 mb-3">
+                    <label class="block text-sm font-medium">
+                        Mô tả
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative" *ngIf="isCanActive">
+                        <div class="absolute right-36 top-11 cursor-pointer">
+                            <label for="insert-image"
+                                class="bg-white p-1.5 border rounded-[3px] border-gray-300 cursor-pointer hover:bg-gray-100">
+                                <i class="fa-solid fa-image cursor-pointer"></i>
+                            </label>
+                            <input type="file" id="insert-image" accept="image/*" multiple class="hidden"
+                                (change)="insertImageToContent($event)" />
+                        </div>
+                        <angular-editor [(ngModel)]="product!.description" [config]="editorConfig" name="description"
+                            (ngModelChange)="getCurrentImageInContent()">
+                        </angular-editor>
+                    </div>
+                    <div class="custom-spinner mt-2" *ngIf="!isCanActive"></div>
+                </div>
+                <div>
+                    <label class="text-sm font-medium">
+                        Màu sắc
+                    </label>
+                    <span class="text-red-500">*</span>
+                    <button (click)="toggleInputNewColor()"
+                        class="ml-2 mr-2 h-full w-6 bg-gray-300 rounded-full hover:bg-gray-400 cursor-pointer hover:text-white"
+                        title="Thêm màu mới">
+                        +
+                    </button>
+                    <input *ngIf="isAddNewColor" type="text" name="newColor"
+                        class="placeholder:text-gray-400 text-[13px] border pl-3 border-gray-300 rounded-4xl"
+                        placeholder="Nhập màu mới..." (keydown.enter)="createNewColors($event)">
+                    <span *ngIf="isAddNewColor" class="text-red-500 text-[13px]">
+                        *Lưu ý: Màu chỉ thực sự được lưu khi bạn dùng nó
+                    </span>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div *ngFor="let color of colors" class="cursor-pointer flex items-center space-x-2">
+                            <input type="checkbox" class="bg-gray-100 p-2 rounded-lg" name="color" [id]="color"
+                                [value]="color" [checked]="product!.colors?.includes(color)"
+                                (change)="addNewColors($event, color)" />
+                            <label [for]="color" class="cursor-pointer selection:bg-transparent">
+                                {{ color}}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium">
+                        Ảnh
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <input type="file" id="file-upload" class="hidden" name="images" accept="image/*" multiple
+                        (change)="onFilesSelected($event)" />
+                    <label for="file-upload"
+                        class="flex items-center border border-gray-300 p-2 rounded-lg cursor-pointer  hover:bg-gray-200 text-gray-500"><span
+                            class="text-gray-400 ">
+                            Choose file
+                        </span>
+                        <span class="border-l border-gray-400 h-5 mx-2">
+                        </span>
+                        <span class="text-gray-400">
+                            {{product!.images?.length}} file
+                        </span>
+                    </label>
+                </div>
+                <div *ngIf="isCanActive" class="grid grid-cols-5 gap-2 mt-4">
+                    <div *ngFor="let image of selectedImageUrls; let i = index">
+                        <button title="Xóa ảnh" (click)="deleteImage(i)"
+                            class="opacity-0 absolute h-20 w-20 cursor-pointer hover:bg-gray-100 hover:opacity-70 transition-all">
+                            <i class="fa-solid fa-xmark text-[13vh]"></i>
+                        </button>
+                        <img [src]="image" [alt]="'Ảnh ' + i" class="h-20 w-20 object-fill bg-gray-100 rounded-lg">
+                    </div>
+                </div>
+                <div class="custom-spinner mt-2" *ngIf="!isCanActive"></div>
+            </div>
+            <div class="w-1/4">
+                <label class="block text-sm font-medium mb-2 mt-4">
+                    Ảnh đại diện
+                    <span class="text-red-500">*</span>
+                </label>
+                <div class="relative pt-[100%]" *ngIf="product?.mainImageUrl">
+                    <img [src]="product!.mainImageUrl" alt="Ảnh đại diện"
+                        class="absolute top-0 left-0 w-full h-full object-cover rounded-lg">
+                </div>
+                <div class="relative mt-2">
+                    <input type="file" id="avatar-upload" class="hidden" accept="image/*" name="mainImageFile"
+                        (change)="onFilesSelectedForMainImage($event)">
+                    <label for="avatar-upload"
+                        class="flex items-center border border-gray-300 p-2 rounded-lg cursor-pointer hover:bg-gray-200 text-gray-500 w-full"><span
+                            class="text-gray-400 flex-shrink-0">
+                            Choose file
+                        </span>
+                        <span class="border-l border-gray-400 h-5 mx-2 flex-shrink-0"></span>
+                        <span class="text-gray-400 truncate overflow-hidden whitespace-nowrap flex-1 min-w-0">
+                            Ảnh đại diện
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 flex justify-end gap-2">
+            <button (click)="redirectEditPage(null, 0)" type="button"
+                class="cursor-pointer px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+                Quay lại
+            </button>
+            <button *ngIf="isUpdate" (click)="updateProduct()" type="submit"
+                class="px-4 py-2 rounded-lg text-white bg-indigo-600 cursor-pointer">
+                Lưu
+            </button>
+            <button *ngIf="isCreate" (click)="addProduct()" type="submit"
+                class="px-4 py-2 rounded-lg text-white bg-indigo-600 cursor-pointer">
+                Tạo mới
+            </button>
+        </div>
+    </form>
+</div>
+<div *ngIf="!isCanActive" class="fixed bg-transparent top-0 left-0 w-full h-full">
+</div>
+<div *ngIf="isShowDialogDelete" class="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-[450px] relative">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Xác nhận xóa</h2>
+        <p class="text-gray-600 mb-4">
+            Bạn có chắc chắn muốn xóa sản phẩm <span class="font-bold">{{productName}}</span> không?</p>
+        <div class="flex justify-end space-x-3">
+            <button (click)="showDialogDelete(null, null)"
+                class="cursor-pointer px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition duration-200">
+                Hủy
+            </button>
+            <button (click)="deleteProduct()"
+                class="cursor-pointer px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200">
+                Xác nhận
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,195 @@
+<div class="bg-white pt-[60px] min-h-[100vh]">
+    <div *ngIf="cartItem.length === 0" class="bg-white rounded-lg p-8 text-center">
+        <div class="flex flex-col items-center gap-4">
+            <img src="http://res.cloudinary.com/dpxcvonet/image/upload/v1742182099/electronics-sales/shopping-bag-null.png"
+                alt="Empty Cart" class="h-24 w-24">
+            <p class="text-gray-500 text-[16px]">
+                Giỏ hàng trống
+            </p>
+            <button [routerLink]="'/home'"
+                class="cursor-pointer flex text-[18px] items-center gap-2 bg-[#FF8900] text-white px-6 py-3 rounded-lg hover:bg-orange-600">
+                <img src="http://res.cloudinary.com/dpxcvonet/image/upload/v1742182099/electronics-sales/union.png"
+                    alt="Shop" class="h-6 w-6">
+                Tiếp tục mua sắm
+            </button>
+        </div>
+    </div>
+    <div *ngIf="cartItem.length > 0" class="max-w-[1440px] mx-auto">
+        <div class="px-2 sm:px-4 md:px-8 lg:px-16 mx-auto py-4 md:py-6">
+            <div class="col-span-12">
+                <div class="bg-white rounded-lg p-2 sm:p-3 md:p-4 mb-4 border-b border-[#e5e7eb]">
+                    <p class="text-red-500 text-[13px] font-semibold mb-3">
+                        *Lưu ý: Các sản phẩm có số lượng là 0 sau khi người dùng rời trang sẽ tự động xóa khỏi giỏ hàng!
+                    </p>
+                    <div
+                        class="grid grid-cols-8 md:grid-cols-12 gap-2 md:gap-3 text-xs sm:text-sm md:text-base text-gray-500">
+                        <div class="col-span-4 md:col-span-5">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="rounded accent-[#FF8900] cursor-pointer"
+                                    (click)="addAllToSelectedItems($event)">
+                                <span class="text-[16px] md:text-[18px] font-bold text-black cursor-pointer">
+                                    Tất cả giỏ hàng
+                                </span>
+                            </label>
+                        </div>
+                        <div class="hidden md:block md:col-span-2 text-center">Đơn giá</div>
+                        <div class="hidden md:block col-span-2 text-center">Số lượng</div>
+                        <div class="hidden md:block col-span-2 text-center">Thành tiền</div>
+                        <div class="hidden md:block md:col-span-1 text-center">Thao tác</div>
+                    </div>
+                </div>
+                <div>
+                    <div *ngFor="let item of cartItem; let i = index; trackBy: trackById"
+                        class="bg-white rounded-lg border-t max-h-[65vh] overflow-auto border-[#e5e7eb] cursor-pointer">
+                        <div [ngClass]="{ 'pointer-events-none': item.isDeleted }"
+                            class="p-3 sm:p-4 md:p-5 border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200 group">
+                            <div class="hidden sm:block">
+                                <div class="grid grid-cols-8 md:grid-cols-12 gap-3 md:gap-4 items-center">
+                                    <div class="col-span-4 md:col-span-5"
+                                        [ngClass]="{ '!cursor-not-allowed opacity-50': item.isDeleted }">
+                                        <div class="flex items-center gap-2 sm:gap-3 md:gap-4"
+                                            (click)="goToProductDetail(i)" title="Click để xem chi tiết sản phẩm">
+                                            <input type="checkbox"
+                                                class="w-4 h-4 rounded accent-[#FF8900] cursor-pointer"
+                                                (click)="toggleItemSelection(item.id!, $event)"
+                                                [checked]="isItemSelected(item)">
+                                            <div
+                                                class="cursor-pointer overflow-hidden rounded-md hover:shadow-md transition-shadow duration-200">
+                                                <img [src]='item.mainImageUrl' [alt]="item.name"
+                                                    class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover flex-shrink-0 transition-transform duration-300 hover:scale-110">
+                                            </div>
+                                            <div class="min-w-0 cursor-pointer">
+                                                <p class="text-sm md:text-base font-medium truncate pr-2 transition-colors hover:text-orange-500"
+                                                    title="Xem chi tiết sản phẩm">
+                                                    {{item.name}}
+                                                </p>
+                                                <div class="text-sm text-gray-500 mt-2">
+                                                    <span
+                                                        class="font-medium bg-gray-100 px-2 py-0.5 rounded-full text-gray-600">
+                                                        {{item.color}}
+                                                    </span>
+                                                </div>
+                                                <div *ngIf="item.isDeleted" class="text-sm text-gray-500 mt-2">
+                                                    <span class="font-medium px-2 py-0.5 rounded-full text-red-500">
+                                                        Sản phẩm đã bị xóa hoặc hết hàng!
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div [ngClass]="{ '!cursor-not-allowed opacity-50': item.isDeleted }"
+                                        class="hidden md:block md:col-span-2 text-center text-gray-600 text-sm md:text-base font-medium">
+                                        {{item.price | currency: 'VND' : 'symbol':'1.0-0':'vi'}}
+                                    </div>
+                                    <div class="col-span-2 text-center quantity-control"
+                                        [ngClass]="{ '!cursor-not-allowed opacity-50': item.isDeleted }">
+                                        <div class="relative">
+                                            <div class="flex items-center justify-center gap-1 quantity-control">
+                                                <button (click)="decreaseQuantity(i)"
+                                                    class="cursor-pointer border-[#e5e7eb] px-1 md:px-2.5 py-0.5 sm:py-1 border rounded bg-gray-100 text-xs sm:text-sm hover:bg-gray-300"
+                                                    title="Trừ">
+                                                    -
+                                                </button>
+                                                <input type="text" (blur)="onBlur($event, i)"
+                                                    (input)="onInputChange($event, i)"
+                                                    class="border-[#e5e7eb] w-4 sm:py-1 sm:w-8 text-center border rounded text-xs sm:text-sm outline-none"
+                                                    [value]="item.quantity">
+                                                <button (click)="increaseQuantity(i)"
+                                                    class="cursor-pointer border-[#e5e7eb] px-1 md:px-2 py-0.5 sm:py-1 border rounded bg-gray-100 text-xs sm:text-sm hover:bg-gray-300"
+                                                    title="Cộng">
+                                                    +
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-span-2 text-center font-bold text-sm text-gray-600 sm:text-base md:text-lg"
+                                        [ngClass]="{ '!cursor-not-allowed opacity-50': item.isDeleted }">
+                                        <span>
+                                            {{item.totalPrice | currency : 'VND':'symbol':'1.0-0':'vi'}}
+                                        </span>
+                                    </div>
+                                    <div class="hidden md:flex md:col-span-1 justify-center pointer-events-auto">
+                                        <button (click)="showDiaLog(item.id!)"
+                                            class="cursor-pointer text-gray-600 hover:text-red-500 p-1 rounded-full transition-all duration-200 hover:bg-red-50 hover:scale-110 "
+                                            title="Xóa sản phẩm">
+                                            <svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                                viewBox="0 0 1024 1024" class="w-5 h-5" height="1em" width="1em"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M360 184h-8c4.4 0 8-3.6 8-8v8h304v-8c0 4.4 3.6 8 8 8h-8v72h72v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80h72v-72zm504 72H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM731.3 840H292.7l-24.2-512h487l-24.2 512z">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-[#e5e7eb]">
+                <div
+                    class="px-2 sm:px-4 md:px-8 lg:px-24 mx-auto py-4 md:py-6 hidden sm:flex items-center justify-between">
+                    <div>
+                        <button *ngIf="selectedItems.length > 0" (click)="showDiaLog(null)"
+                            class="cursor-pointer text-red-500 hover:text-red-600 text-sm flex items-center gap-1">
+                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024"
+                                class="w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M360 184h-8c4.4 0 8-3.6 8-8v8h304v-8c0 4.4 3.6 8 8 8h-8v72h72v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80h72v-72zm504 72H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM731.3 840H292.7l-24.2-512h487l-24.2 512z">
+                                </path>
+                            </svg>
+                            <span>
+                                Xóa ({{selectedItems.length}})
+                            </span>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-sm">
+                            <span class="text-gray-500">
+                                Tổng cộng:
+                            </span>
+                            <span class="text-xl font-bold text-[#FF8900] ml-2">
+                                {{totalPrice | currency : 'VND':'symbol':'1.0-0':'vi'}}
+                            </span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button [disabled]="!isPayment"
+                                [ngClass]="{'cursor-not-allowed bg-gray-300' : !isPayment, 'cursor-pointer bg-orange-500' : isPayment}"
+                                (click)="buyNow()"
+                                class="px-6 py-3 text-white text-lg font-medium rounded-lg transition-colors flex items-center gap-2  cursor-pointer">
+                                <span>
+                                    Mua hàng
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="isShowToDelete" class="fixed inset-0 flex items-center justify-center p-2 sm:p-4 z-50"
+    style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow-lg w-full max-w-xs sm:max-w-sm">
+        <h3 class="text-lg font-semibold mb-4">
+            Xác nhận xóa sản phẩm
+        </h3>
+        <p *ngIf="selectedItemId === null" class="text-gray-600 mb-6">
+            Bạn có chắc chắn xóa {{selectedItems.length}} sản phẩm khỏi giỏ hàng?
+        </p>
+        <p *ngIf="selectedItemId !== null" class="text-gray-600 mb-6">
+            Bạn có chắc chắn xóa sản phẩm này khỏi giỏ hàng?
+        </p>
+        <div class="flex justify-end gap-4">
+            <button (click)="showDiaLog(null)"
+                class=" cursor-pointer px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md">
+                Hủy
+            </button>
+            <button (click)="deleteItemsSelected(null)"
+                class=" cursor-pointer px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+                Xác nhận xóa
+            </button>
+        </div>
+    </div>
+</div>

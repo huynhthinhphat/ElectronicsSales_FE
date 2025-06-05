@@ -1,0 +1,4 @@
+.menu:focus .logout {
+    display: block;
+    position: absolute;
+}

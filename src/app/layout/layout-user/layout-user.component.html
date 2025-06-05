@@ -1,0 +1,92 @@
+<header class="fixed top-0 left-0 right-0 z-2 bg-white shadow-md">
+    <div class="header-logo-search">
+        <div>
+            <a [routerLink]="['home']">
+                <img src="https://img.freepik.com/premium-vector/online-shop-logo-designs-concept-vector-online-store-logo-designs_7649-661.jpg?w=2000"
+                    alt="Ảnh logo">
+            </a>
+        </div>
+        <div class="flex flex-col">
+            <form class="form-search" (ngSubmit)="searchProduct()">
+                <div>
+                    <input type="search" name="search" id="input-search" [(ngModel)]="search"
+                        placeholder="Tìm kiếm sản phẩm theo tên hoặc mã sản phẩm..." list="productList">
+                    <datalist id="productList">
+                        <option *ngFor="let product of products" [value]="product.name"></option>
+                    </datalist>
+                </div>
+                <div>
+                    <button type="submit" class="cursor-pointer"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </form>
+            <ul class="flex gap-3.5 w-[85%]">
+                <li *ngFor="let brand of brands" class="cursor-pointer hover:text-orange-500 text-[14px]"
+                    [ngClass]="{'text-orange-500' : brand.id === selectedBrandId}" (click)="searchByBrand(brand.id!)">
+                    {{brand.name}}
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="header-user-cart">
+        <div class="header-user">
+            <div class="user-icon" *ngIf="!isLogin">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="h-10 w-10 p-0.5 border-2 border-[#FF8900] rounded-full" *ngIf="isLogin">
+                <img [src]="avatarUrl" referrerpolicy="no-referrer" alt="Avatar"
+                    class="w-[100%] h-[100%] object-cover rounded-full">
+            </div>
+            <div *ngIf="isLogin" style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+                <div class="user-name">
+                    {{fullName}}
+                </div>
+                <div class="btn-feature-other">
+                    <i class="fa-solid fa-sort-down"></i>
+                </div>
+            </div>
+            <ul *ngIf="isLogin" class="modal-user has-user">
+                <li>
+                    <a (click)="goToInfor()">
+                        Tài khoản của tôi
+                        <i class="fa-solid fa-circle-info"></i>
+                    </a>
+                </li>
+                <li>
+                    <a (click)="logout()">
+                        Đăng xuất
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <ul *ngIf="!isLogin" class="modal-user no-user">
+                <li>
+                    <a href="login">
+                        Đăng nhập
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="register">
+                        Đăng ký
+                        <i class="fa-solid fa-user-plus"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div *ngIf="visible" class="header-notification" (click)="goToCart()">
+            <span *ngIf="isLogin" class="cart-quantity">
+                {{totalQuantity}}
+            </span>
+            <i class="fa-solid fa-cart-shopping"></i>
+        </div>
+    </div>
+</header>
+
+<div class="min-h-screen pt-4" style="background: linear-gradient(to right, #f9eeee, #ecf9ec); min-height: 100vh;">
+    <router-outlet></router-outlet>
+</div>
+
+<footer class="bg-gray-100 py-6 text-center text-gray-600 text-sm">
+    © 2025 Electronics Sales. All rights reserved.
+</footer>

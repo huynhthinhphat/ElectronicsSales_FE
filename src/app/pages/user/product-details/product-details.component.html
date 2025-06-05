@@ -1,0 +1,236 @@
+<div class="pt-19 pl-18 pr-18 bg-white">
+    <div class="text-gray-500 sm:mb-4 mb-2 text-xs md:text-sm mt-2 flex flex-wrap items-center gap-1 md:gap-2">
+        <span class="text-black font-semibold cursor-pointer">Sản phẩm</span>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span class="text-black font-semibold cursor-pointer">Máy tính</span>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span class="font-semibold text-gray-400">{{product?.name}}</span>
+    </div>
+    <div class="flex flex-col lg:flex-row gap-6">
+        <div class="w-full lg:w-auto flex justify-center">
+            <div>
+                <div
+                    class="cursor-zoom-in border border-gray-200 aspect-square rounded-lg overflow-hidden w-full md:w-[300px] md:h-[300px] lg:w-[400px] lg:h-[400px] relative">
+                    <img (mousemove)="onMouseMove($event)" (mouseleave)="leaveImage()" #mainImageUrl
+                        [src]='selectedMainImageUrl' alt="product"
+                        class="w-full h-full object-contain magnify-container">
+                    <div #zoomedImage [ngStyle]="zoomStyle"
+                        [ngClass]='{"hidden" : !isZoom, "fixed pointer-events-none z-100" : isZoom}'
+                        class="w-[200px] h-[200px] border-none rounded-full"></div>
+                </div>
+                <div class="w-[25em] flex justify-start gap-2 mt-2 p-1 overflow-x-auto custom-scroll-x">
+                    <div *ngFor="let image of images"
+                        class="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden cursor-pointer border border-gray-200">
+                        <img (click)="changeMainImageUrl(image)" [src]='image'
+                            [alt]='"Hình ảnh của sản phẩm "+product?.name' class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex-1">
+            <h1 class="text-[18px] font-medium">
+                {{product?.name}}
+            </h1>
+            <div class="flex flex-wrap gap-4 mt-2 text-gray-500 text-base">
+                <div class="flex items-center gap-1">
+                    <p><i class="fa-solid fa-star text-[#FF8900]"></i> 4.9/5</p>
+                </div>
+                <span>
+                    Mặt hàng:
+                    <span class="font-bold">
+                        {{product?.category}}
+                    </span>
+                </span>
+                <span>
+                    Đã bán
+                    <span class="font-bold">
+                        {{product?.quantitySold}}
+                    </span>
+                </span>
+            </div>
+            <div class="mt-2">
+                <h2 class="text-[32px] font-bold">
+                    <span class="text-[#FF8900]">
+                        {{product?.discountPrice | currency:'VND':'symbol':'1.0-0':'vi' }}
+                    </span>
+                </h2>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="text-gray-500 line-through text-[14px]">
+                        {{product?.price | currency:'VND':'symbol':'1.0-0':'vi' }}
+                    </span>
+                    <span class="bg-[#FF8900] text-white px-2 py-0.5 rounded text-[12px]">
+                        {{product?.discount}}%
+                    </span>
+                </div>
+            </div>
+            <div class="mt-4">
+                <h3 class="text-base mb-2 font-semibold">
+                    Màu sắc
+                </h3>
+                <div class="grid grid-cols-4 gap-2 text-[14px] text-gray-500 font-semibold">
+                    <button *ngFor="let color of colors" class="px-3 py-1 rounded border border-gray-300 cursor-pointer"
+                        [ngClass]='{"!border-[#FF8900] !text-[#FF8900]": selectedColor === color}'
+                        (click)="changeColor(color)">
+                        {{color}}
+                    </button>
+                </div>
+            </div>
+            <div class="w-full flex justify-end mt-6 sm:mt-0">
+                <div class="w-full lg:w-[300px]">
+                    <div class="mt-4 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-500">
+                                Phân loại:
+                            </span>
+                            <span class="font-bold">
+                                {{selectedColor}}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-gray-500">
+                                Số lượng:
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <button [disabled]="quantity == 1" (click)="updateQuantityAddOrOrder(quantity - 1)"
+                                    class="cursor-pointer w-8 h-8 border-0 border-solid border-gray-200 bg-gray-100 flex items-center justify-center rounded-md hover:bg-gray-200 transition duration-100">
+                                    -
+                                </button>
+                                <input type="text" [(ngModel)]="quantity"
+                                    class="w-12 h-8 border border-solid border-gray-200 text-center rounded-md outline-none"
+                                    (input)="updateQuantityAddOrOrder($event)">
+                                <button [disabled]="quantity == product?.stock"
+                                    (click)="updateQuantityAddOrOrder(quantity + 1)"
+                                    class="cursor-pointer w-8 h-8 border-0 border-solid border-gray-200 bg-gray-100 flex items-center justify-center rounded-md hover:bg-gray-200 transition duration-100">
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                        <span class="text-gray-500 flex justify-end text-[14px]">
+                            Còn {{product?.stock}} sản phẩm
+                        </span>
+                        <div class="flex flex-col gap-3 mt-3">
+                            <div (click)="addToCart()"
+                                [ngClass]="{'!cursor-not-allowed' : product?.stock == 0, '!cursor-pointer hover:bg-orange-50 transition-colors active:bg-orange-100' : product?.stock != 0}"
+                                class="flex gap-2 justify-center rounded-md p-2 border border-[#FF8900] items-center">
+                                <img src="http://res.cloudinary.com/dpxcvonet/image/upload/v1742182099/electronics-sales/ysjihfviu9geiom0kmpb.png"
+                                    alt="academicCap" class="h-5">
+                                <button [disabled]="product?.stock == 0" class="text-[#FF8900] font-medium"
+                                    [ngClass]="{'!cursor-not-allowed' : product?.stock == 0, '!cursor-pointer' : product?.stock != 0}">
+                                    Thêm vào giỏ hàng
+                                </button>
+                            </div>
+                            <button (click)="buyNow()" [disabled]="product?.stock == 0"
+                                class="w-full py-2 bg-[#FF8900] text-white rounded-md font-medium cursor-pointer"
+                                [ngClass]="{'!cursor-not-allowed' : product?.stock == 0, '!cursor-pointer hover:bg-[#e07800] transition-colors active:bg-[#cc6c00]' : product?.stock != 0}">
+                                Mua ngay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-6 flex flex-col lg:flex-row gap-6">
+        <div class="w-full lg:w-[45%]">
+            <h3 class="font-medium mb-3 text-xl lg:text-2xl">
+                Chi tiết sản phẩm
+            </h3>
+            <div class="flex flex-col">
+                <div class="flex justify-between items-center py-1">
+                    <div class="w-32 lg:w-40 text-gray-400">
+                        Danh mục:
+                    </div>
+                    <div class="flex-1 px-3">
+                        {{product?.category}}
+                    </div>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <div class="w-32 lg:w-40 text-gray-400">
+                        Thương hiệu:
+                    </div>
+                    <div class="flex-1 px-3">
+                        {{product?.brand}}
+                    </div>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <div class="w-32 lg:w-40 text-gray-400">
+                        Bảo hành:
+                    </div>
+                    <div class="flex-1 px-3">
+                        {{product?.warranty}} tháng
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-full lg:w-[55%]">
+            <h3 class="font-medium mb-3 text-xl lg:text-2xl">
+                Mô tả sản phẩm
+            </h3>
+            <div [innerHTML]="product?.description">
+            </div>
+        </div>
+    </div>
+    <div class="mt-7 flex flex-col gap-2">
+        <span class="font-medium text-2xl">
+            {{product?.star}}
+            <i class="fa-solid fa-star text-yellow-500"></i>
+            Đánh giá sản phẩm
+            ({{reviews.length}})
+        </span>
+        <div class="flex gap-4">
+            <label for="stars" class="border text-orange-500 border-orange-500 p-2 rounded-[7px] cursor-pointer">
+                <select name="" id="stars" class="cursor-pointer outline-none" [(ngModel)]="orderBy"
+                    (ngModelChange)="viewReviews()">
+                    <option value="">Tất cả</option>
+                    <option value="5">5 sao</option>
+                    <option value="4">4 sao</option>
+                    <option value="3">3 sao</option>
+                    <option value="2">2 sao</option>
+                    <option value="1">1 sao</option>
+                </select>
+            </label>
+        </div>
+        <div *ngFor="let item of reviews; let reviewIndex = index" class="p-2 w-[40em] border-t-1 border-gray-300">
+            <div class="flex gap-2 items-center">
+                <img [src]="item.avatar" alt="Avatar" class="w-10 h-10 rounded-full object-cover">
+                <div>
+                    <div class="font-bold">
+                        {{item.fullName}}
+                    </div>
+                    <i *ngFor="let _ of [].constructor(5); let i = index" class="fa-solid fa-star"
+                        [ngClass]="{'text-yellow-500' : i < item.star!, 'text-gray-500' : i >= item.star!}"></i>
+                </div>
+            </div>
+            <div>
+                <span class="font-bold">Phân loại: </span>{{item.productName}}
+                -
+                <span class="font-bold">Màu sắc: </span>{{item.color}}
+            </div>
+            <p *ngIf="item.description">
+                <span class="font-bold">Mô tả: </span>{{item.description}}
+            </p>
+            <div class="grid grid-cols-3 gap-4">
+                <img *ngFor="let image of item.images; let i = index" [src]="image" [alt]="'Ảnh ' + i"
+                    class="w-60 h-50 object-cover cursor-pointer"
+                    (click)="zoomImage(reviewIndex, i, item.images?.length!)">
+            </div>
+            <div class="mt-1 text-gray-500">
+                {{item.createdAt | date: 'dd/MM/yyyy' }}
+            </div>
+        </div>
+    </div>
+    <div *ngIf="selectedImage" (click)="closeBigImage()"
+        class="fixed top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.5)] z-100 flex justify-center items-center">
+        <button (click)="preImage($event)"
+            class="w-[50px] h-[50px] bg-white rounded-full mr-2 cursor-pointer hover:bg-gray-200 transition-all">
+            <i class="text-[20px] fa-solid fa-chevron-left"></i>
+        </button>
+        <img [src]="selectedImage" alt="Ảnh đang load..." class="w-[550px] h-[550px] object-cover shadow-xl"
+            (click)="stopPropagation($event)">
+        <button (click)="nextImage($event)"
+            class="w-[50px] h-[50px] bg-white rounded-full ml-2 cursor-pointer hover:bg-gray-200 transition-all">
+            <i class="text-[20px] fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
+
+</div>

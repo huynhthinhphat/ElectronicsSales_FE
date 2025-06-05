@@ -1,0 +1,52 @@
+<div class="p-4">
+    <h2 class="text-2xl text-indigo-600 font-bold mb-5">
+        Thùng rác
+    </h2>
+    <div>
+        <table class="w-full border-collapse bg-white">
+            <thead class="bg-gray-200 text-gray-700 font-bold">
+                <tr>
+                    <th class="p-4 text-left w-[40%]">Tên</th>
+                    <th class="p-4 text-left w-[40%] ">Ngày xóa</th>
+                    <th class="p-4 text-center w-[20%] ">Hành động</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="products.length > 0">
+                <tr *ngFor="let product of products" class="border-b hover:bg-gray-50"
+                    style="border-color: rgb(229, 231, 235);">
+                    <td class="w-[17%] p-4 whitespace-nowrap overflow-hidden overflow-ellipsis max-w-[25vh] font-bold">
+                        {{product.name}}
+                    </td>
+                    <td class="w-[16.9%] p-4 whitespace-nowrap overflow-hidden overflow-ellipsis max-w-[20vh]">
+                        {{product.deletedAt | date: 'dd/MM/yyyy hh:mm a'}}
+                    </td>
+                    <td class="p-4 text-center">
+                        <button (click)="toggleDialogConfirm(product.id!, product.name!)"
+                            class="text-indigo-600 cursor-pointer text-lg hover:scale-110 transition mr-3">
+                            <i class="fa-solid fa-arrow-rotate-left"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div *ngIf="isShowDialogConfirm" class="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex items-center justify-center z-50"
+    (click)="toggleDialogConfirm(null, null)">
+    <div (click)="stopPropagation($event)" class="bg-white p-6 rounded-lg shadow-lg w-[450px] relative">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Xác nhận khôi phục</h2>
+        <p class="text-gray-600 mb-4">
+            Bạn có chắc chắn muốn khôi phục sản phẩm <span class="font-bold">{{productName}}</span> không?</p>
+        <div class="flex justify-end space-x-3">
+            <button (click)="toggleDialogConfirm(null, null)"
+                class="cursor-pointer px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition duration-200">
+                Hủy
+            </button>
+            <button (click)="restoreProduct()"
+                class="cursor-pointer px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200">
+                Xác nhận
+            </button>
+        </div>
+    </div>
+</div>

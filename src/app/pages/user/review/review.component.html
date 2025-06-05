@@ -1,0 +1,63 @@
+<div class="pt-19 pl-18 pr-18">
+    <div class="max-w-xl mx-auto bg-white p-6 rounded-[7px] shadow-md">
+        <h3 class="text-2xl font-semibold mb-4 text-gray-800">Đánh giá sản phẩm</h3>
+        <div class="flex flex-col gap-2">
+            <div class="flex gap-3">
+                <div class="w-[30vh]">Tên sản phẩm:</div>
+                <div>{{review?.productName}}</div>
+            </div>
+            <div class="flex gap-3">
+                <div class="w-[30vh]">Màu sắc:</div>
+                <div>{{review?.color}}</div>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-[30vh]">
+                    Chất lượng sản phẩm:
+                </div>
+                <div class="flex items-center">
+                    <span *ngFor="let i of stars" (mouseenter)="enterStars(i)" (mouseleave)="leaveStars()"
+                        (click)="chooseNumberStars(i)" class="text-3xl text-gray-300 cursor-pointer star" data-value="1"
+                        [ngClass]="{'text-orange-500' : i <= numberStarTemp}">&#9733;</span>
+                </div>
+            </div>
+        </div>
+        <div class="mb-2">
+            <label *ngIf="selectedImageUrls.length === 0" for="images"
+                class="cursor-pointer flex flex-col items-center">
+                <div class="cursor-pointer border border-orange-500 flex flex-col justify-center items-center p-2">
+                    <i class="fa-solid fa-camera text-[5vh] text-orange-500"></i>
+                    <span class="mt-1.5 text-orange-500">Thêm Hình Ảnh</span>
+                </div>
+                <input type="file" id="images" multiple accept="image/*" class="hidden" (change)="uploadImages($event)">
+            </label>
+            <div class="grid grid-cols-3 gap-3 mt-2">
+                <div *ngFor="let image of selectedImageUrls; let i = index">
+                    <button title="Xóa ảnh" (click)="deleteImage(i)"
+                        class="opacity-0 absolute h-40 w-40 cursor-pointer hover:bg-gray-100 hover:opacity-70 transition-all">
+                        <i class="fa-solid fa-xmark text-[13vh]"></i>
+                    </button>
+                    <img [src]="image" [alt]="'Ảnh ' + i" class="h-40 w-40 object-fill bg-gray-100 rounded-lg">
+                </div>
+                <div *ngIf="selectedImageUrls.length > 0 && selectedImageUrls.length < 6">
+                    <label for="images" class="cursor-pointer flex flex-col items-center">
+                        <div
+                            class="h-40 w-40 cursor-pointer border border-orange-500 flex flex-col justify-center items-center">
+                            <i class="fa-solid fa-camera text-[5vh] text-orange-500"></i>
+                            <span class="mt-1.5 text-orange-500">Thêm Hình Ảnh</span>
+                        </div>
+                        <input type="file" id="images" multiple accept="image/*" class="hidden"
+                            (change)="uploadImages($event)">
+                    </label>
+                </div>
+            </div>
+        </div>
+        <span class="flex justify-end text-gray-500">{{description.length}}/250</span>
+        <textarea rows="4" placeholder="Chia sẻ nhận xét của bạn về sản phẩm..." (input)="toggleText($event)"
+            [value]="description" name="description"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 mb-4"></textarea>
+        <button (click)="sendReview()"
+            class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg w-full cursor-pointer">
+            Gửi đánh giá
+        </button>
+    </div>
+</div>

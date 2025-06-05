@@ -1,0 +1,282 @@
+<div class="lg:col-span-10">
+    <h1 class="text-xl sm:text-2xl font-bold mb-2 hidden lg:block">
+        Đơn hàng của tôi
+    </h1>
+    <div>
+        <div class="space-y-2">
+            <form class="bg-white p-2 rounded-lg" (submit)="onSearchSubmit($event)">
+                <div class="flex text-sm gap-2 rounded-lg border border-gray-200">
+                    <div class="flex-1 flex items-center relative">
+                        <input type="text" name="search" placeholder="Tìm kiếm đơn hàng" [(ngModel)]="search"
+                            class="w-full p-2 focus:outline-none placeholder:text-gray-500">
+                    </div>
+                    <button class="bg-orange-500 px-4 text-white flex items-center justify-center" type="submit">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024"
+                            class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0 0 11.6 0l43.6-43.5a8.2 8.2 0 0 0 0-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+            <div class="bg-white rounded-lg">
+                <div class="overflow-x-auto scrollbar-hide">
+                    <div class="flex whitespace-nowrap border-b min-w-max">
+                        <button (click)="viewOrders('')"
+                            class="cursor-pointer px-4 py-3 text-sm font-medium text-gray-500 hover:text-orange-500"
+                            [ngClass]="{'text-orange-500 border-b-2 !border-orange-500' : status === ''}">
+                            Tất cả
+                        </button>
+                        <button (click)="viewOrders('PENDING')"
+                            class="cursor-pointer px-4 py-3 text-sm font-medium text-gray-500 hover:text-orange-500"
+                            [ngClass]="{'text-orange-500 border-b-2 !border-orange-500' : status === 'PENDING'}">
+                            Đang xử lý
+                        </button>
+                        <button (click)="viewOrders('SHIPPING')"
+                            class="cursor-pointer px-4 py-3 text-sm font-medium text-gray-500 hover:text-orange-500"
+                            [ngClass]="{'text-orange-500 border-b-2 !border-orange-500' : status === 'SHIPPING'}">
+                            Đang vận chuyển
+                        </button>
+                        <button (click)="viewOrders('COMPLETED')"
+                            class="cursor-pointer px-4 py-3 text-sm font-medium text-gray-500 hover:text-orange-500"
+                            [ngClass]="{'text-orange-500 border-b-2 !border-orange-500' : status === 'COMPLETED'}">
+                            Đã hoàn thành
+                        </button>
+                        <button (click)="viewOrders('CANCELED')"
+                            class="cursor-pointer px-4 py-3 text-sm font-medium text-gray-500 hover:text-orange-500"
+                            [ngClass]="{'text-orange-500 border-b-2 !border-orange-500' : status === 'CANCELED'}">
+                            Đã hủy
+                        </button>
+                        <button (click)="viewOrders('RETURNING')"
+                            class="cursor-pointer px-4 py-3 text-sm font-medium text-gray-500 hover:text-orange-500"
+                            [ngClass]="{'text-orange-500 border-b-2 !border-orange-500' : status === 'RETURNING'}">
+                            Đang hoàn hàng
+                        </button>
+                        <button (click)="viewOrders('REFUNDED')"
+                            class="cursor-pointer px-4 py-3 text-sm font-medium text-gray-500 hover:text-orange-500"
+                            [ngClass]="{'text-orange-500 border-b-2 !border-orange-500' : status === 'REFUNDED'}">
+                            Đã hoàn tiền
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="bg-white rounded-lg" *ngFor="let order of orders" (click)="goToOrderDetail(order.id!)">
+                    <div>
+                        <div class="px-4 py-4 pt-4 space-y-4 cursor-pointer shadow-lg">
+                            <div class="flex sm:flex-row items-center justify-between gap-3">
+                                <div class="flex items-center gap-1 sm:gap-3">
+                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                            viewBox="0 0 1024 1024" class="h-4 w-4 text-blue-500" height="1em"
+                                            width="1em" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M938 458.8l-29.6-312.6c-1.5-16.2-14.4-29-30.6-30.6L565.2 86h-.4c-3.2 0-5.7 1-7.6 2.9L88.9 557.2a9.96 9.96 0 0 0 0 14.1l363.8 363.8c1.9 1.9 4.4 2.9 7.1 2.9s5.2-1 7.1-2.9l468.3-468.3c2-2.1 3-5 2.8-8zM459.7 834.7L189.3 564.3 589 164.6 836 188l23.4 247-399.7 399.7zM680 256c-48.5 0-88 39.5-88 88s39.5 88 88 88 88-39.5 88-88-39.5-88-88-88zm0 120c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div (click)="stopClickPropagation($event)"
+                                        class="inline-flex items-center gap-2 border border-gray-200 rounded-md p-1 sm:p-2 bg-gray-50">
+                                        <span class="font-bold text-sm" title="Mã hóa đơn">
+                                            {{order.orderCode}}
+                                        </span>
+                                        <svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                            viewBox="0 0 1024 1024" class="h-4 text-gray-400" height="1em" width="1em"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M765.7 486.8L314.9 134.7A7.97 7.97 0 0 0 302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 0 0 0-50.4z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div *ngIf="order.status === 'RETURNING'"
+                                        class="text-red-500 text-[14px] font-semibold">
+                                        <div
+                                            class="flex items-center text-xs sm:text-sm font-bold px-2 sm:px-4 py-2 rounded-lg shadow-md bg-pink-500 text-white hover:bg-pink-600 transition-colors">
+                                            <svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                                viewBox="0 0 1024 1024" class="h-5 w-5 mr-2" height="1em" width="1em"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M380 704h264c4.4 0 8-3.6 8-8v-84c0-4.4-3.6-8-8-8h-40c-4.4 0-8 3.6-8 8v36H428v-36c0-4.4-3.6-8-8-8h-40c-4.4 0-8 3.6-8 8v84c0 4.4 3.6 8 8 8zm340-123a40 40 0 1 0 80 0 40 40 0 1 0-80 0zm239-167.6L935.3 372a8 8 0 0 0-10.9-2.9l-50.7 29.6-78.3-216.2a63.9 63.9 0 0 0-60.9-44.4H301.2c-34.7 0-65.5 22.4-76.2 55.5l-74.6 205.2-50.8-29.6a8 8 0 0 0-10.9 2.9L65 413.4c-2.2 3.8-.9 8.6 2.9 10.8l60.4 35.2-14.5 40c-1.2 3.2-1.8 6.6-1.8 10v348.2c0 15.7 11.8 28.4 26.3 28.4h67.6c12.3 0 23-9.3 25.6-22.3l7.7-37.7h545.6l7.7 37.7c2.7 13 13.3 22.3 25.6 22.3h67.6c14.5 0 26.3-12.7 26.3-28.4V509.4c0-3.4-.6-6.8-1.8-10l-14.5-40 60.3-35.2a8 8 0 0 0 3-10.8zM840 517v237H184V517l15.6-43h624.8l15.6 43zM292.7 218.1l.5-1.3.4-1.3c1.1-3.3 4.1-5.5 7.6-5.5h427.6l75.4 208H220l72.7-199.9zM224 581a40 40 0 1 0 80 0 40 40 0 1 0-80 0z">
+                                                </path>
+                                            </svg><span>ĐANG HOÀN HÀNG</span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="order.status === 'REFUNDED'"
+                                        class="text-green-500 text-[14px] font-semibold">
+                                        <div
+                                            class="flex items-center text-xs sm:text-sm font-bold px-2 sm:px-4 py-2 rounded-lg shadow-md bg-green-500 text-white hover:bg-green-600 transition-colors">
+                                            <i class="fa-solid fa-money-bill-1-wave mr-2"></i>
+                                            <span>
+                                                ĐÃ HOÀN TIỀN
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="order.status === 'PENDING'" class="flex flex-col items-end">
+                                        <div
+                                            class="flex items-center text-xs sm:text-sm font-bold px-2 sm:px-4 py-2 rounded-lg shadow-md bg-orange-500 text-white hover:bg-orange-600 transition-colors">
+                                            <svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                                viewBox="0 0 1024 1024" class="h-5 w-5 mr-2" height="1em" width="1em"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z">
+                                                </path>
+                                                <path
+                                                    d="M686.7 638.6L544.1 535.5V288c0-4.4-3.6-8-8-8H488c-4.4 0-8 3.6-8 8v275.4c0 2.6 1.2 5 3.3 6.5l165.4 120.6c3.6 2.6 8.6 1.8 11.2-1.7l28.6-39c2.6-3.7 1.8-8.7-1.8-11.2z">
+                                                </path>
+                                            </svg>
+                                            <span>ĐANG XỬ LÝ</span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="order.status === 'CANCELED'" class="flex flex-col items-end">
+                                        <div
+                                            class="flex items-center text-xs sm:text-sm font-bold px-2 sm:px-4 py-2 rounded-lg shadow-md bg-red-500 text-white hover:bg-red-600 transition-colors">
+                                            <svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                                viewBox="0 0 1024 1024" fill-rule="evenodd" class="h-5 w-5 mr-2"
+                                                height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M512 64c247.4 0 448 200.6 448 448S759.4 960 512 960 64 759.4 64 512 264.6 64 512 64Zm0 76c-205.4 0-372 166.6-372 372s166.6 372 372 372 372-166.6 372-372-166.6-372-372-372Zm128.013 198.826c.023.007.042.018.083.059l45.02 45.019c.04.04.05.06.058.083a.118.118 0 0 1 0 .07c-.007.022-.018.041-.059.082L557.254 512l127.861 127.862a.268.268 0 0 1 .05.06l.009.023a.118.118 0 0 1 0 .07c-.007.022-.018.041-.059.082l-45.019 45.02c-.04.04-.06.05-.083.058a.118.118 0 0 1-.07 0c-.022-.007-.041-.018-.082-.059L512 557.254 384.14 685.115c-.042.041-.06.052-.084.059a.118.118 0 0 1-.07 0c-.022-.007-.041-.018-.082-.059l-45.02-45.019c-.04-.04-.05-.06-.058-.083a.118.118 0 0 1 0-.07c.007-.022.018-.041.059-.082L466.745 512l-127.86-127.86a.268.268 0 0 1-.05-.061l-.009-.023a.118.118 0 0 1 0-.07c.007-.022.018-.041.059-.082l45.019-45.02c.04-.04.06-.05.083-.058a.118.118 0 0 1 .07 0c.022.007.041.018.082.059L512 466.745l127.862-127.86c.04-.041.06-.052.083-.059a.118.118 0 0 1 .07 0Z">
+                                                </path>
+                                            </svg>
+                                            <span>ĐÃ HỦY</span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="order.status === 'COMPLETED'" class="flex flex-col items-end">
+                                        <div
+                                            class="flex items-center text-xs sm:text-sm font-bold px-2 sm:px-4 py-2 rounded-lg shadow-md bg-green-500 text-white hover:bg-green-600 transition-colors">
+                                            <svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                                viewBox="0 0 1024 1024" class="h-5 w-5 mr-2" height="1em" width="1em"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M699 353h-46.9c-10.2 0-19.9 4.9-25.9 13.3L469 584.3l-71.2-98.8c-6-8.3-15.6-13.3-25.9-13.3H325c-6.5 0-10.3 7.4-6.5 12.7l124.6 172.8a31.8 31.8 0 0 0 51.7 0l210.6-292c3.9-5.3.1-12.7-6.4-12.7z">
+                                                </path>
+                                                <path
+                                                    d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z">
+                                                </path>
+                                            </svg><span>ĐÃ HOÀN THÀNH</span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="order.status === 'SHIPPING'" class="flex flex-col items-end">
+                                        <div
+                                            class="flex items-center text-xs sm:text-sm font-bold px-2 sm:px-4 py-2 rounded-lg shadow-md bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                                            <svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                                viewBox="0 0 1024 1024" class="h-5 w-5 mr-2" height="1em" width="1em"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M380 704h264c4.4 0 8-3.6 8-8v-84c0-4.4-3.6-8-8-8h-40c-4.4 0-8 3.6-8 8v36H428v-36c0-4.4-3.6-8-8-8h-40c-4.4 0-8 3.6-8 8v84c0 4.4 3.6 8 8 8zm340-123a40 40 0 1 0 80 0 40 40 0 1 0-80 0zm239-167.6L935.3 372a8 8 0 0 0-10.9-2.9l-50.7 29.6-78.3-216.2a63.9 63.9 0 0 0-60.9-44.4H301.2c-34.7 0-65.5 22.4-76.2 55.5l-74.6 205.2-50.8-29.6a8 8 0 0 0-10.9 2.9L65 413.4c-2.2 3.8-.9 8.6 2.9 10.8l60.4 35.2-14.5 40c-1.2 3.2-1.8 6.6-1.8 10v348.2c0 15.7 11.8 28.4 26.3 28.4h67.6c12.3 0 23-9.3 25.6-22.3l7.7-37.7h545.6l7.7 37.7c2.7 13 13.3 22.3 25.6 22.3h67.6c14.5 0 26.3-12.7 26.3-28.4V509.4c0-3.4-.6-6.8-1.8-10l-14.5-40 60.3-35.2a8 8 0 0 0 3-10.8zM840 517v237H184V517l15.6-43h624.8l15.6 43zM292.7 218.1l.5-1.3.4-1.3c1.1-3.3 4.1-5.5 7.6-5.5h427.6l75.4 208H220l72.7-199.9zM224 581a40 40 0 1 0 80 0 40 40 0 1 0-80 0z">
+                                                </path>
+                                            </svg><span>ĐANG GIAO HÀNG</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="divide-y divide-gray-100" *ngFor="let orderItem of order.items">
+                                <div class="pt-4 hover:bg-gray-50 transition-colors cursor-pointer group">
+                                    <div class="flex sm:gap-4 gap-3 items-center">
+                                        <div
+                                            class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden border border-gray-200 group-hover:border-orange-300 transition-all shadow-sm">
+                                            <img [src]='orderItem.mainImageUrl' [alt]='"Ảnh " + orderItem.name'
+                                                class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                        </div>
+                                        <div class="flex-1 min-w-0 flex flex-col justify-between">
+                                            <div>
+                                                <div class="flex items-center gap-2 mb-1 relative">
+                                                    <div
+                                                        class="flex items-center gap-1 px-2 py-0.5 bg-orange-100 rounded-full">
+                                                        <p class="text-orange-700 text-xs font-bold">
+                                                            {{orderItem.sku}}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <h3
+                                                    class="text-base font-medium text-gray-800 group-hover:text-orange-600 transition-colors truncate">
+                                                    {{orderItem.name}}
+                                                </h3>
+                                            </div>
+                                            <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-sm text-gray-600">
+                                                        {{orderItem.color}}
+                                                    </span>
+                                                </div>
+                                                <div class="flex items-center gap-1 text-gray-500">
+                                                    <span class="font-semibold text-gray-700">
+                                                        x{{orderItem.quantity}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-end justify-center">
+                                        <div class="flex items-center gap-1">
+                                            <svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                                viewBox="0 0 1024 1024" class="text-orange-500" height="1em" width="1em"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372zm47.7-395.2l-25.4-5.9V348.6c38 5.2 61.5 29 65.5 58.2.5 4 3.9 6.9 7.9 6.9h44.9c4.7 0 8.4-4.1 8-8.8-6.1-62.3-57.4-102.3-125.9-109.2V263c0-4.4-3.6-8-8-8h-28.1c-4.4 0-8 3.6-8 8v33c-70.8 6.9-126.2 46-126.2 119 0 67.6 49.8 100.2 102.1 112.7l24.7 6.3v142.7c-44.2-5.9-69-29.5-74.1-61.3-.6-3.8-4-6.6-7.9-6.6H363c-4.7 0-8.4 4-8 8.7 4.5 55 46.2 105.6 135.2 112.1V761c0 4.4 3.6 8 8 8h28.4c4.4 0 8-3.6 8-8.1l-.2-31.7c78.3-6.9 134.3-48.8 134.3-124-.1-69.4-44.2-100.4-109-116.4zm-68.6-16.2c-5.6-1.6-10.3-3.1-15-5-33.8-12.2-49.5-31.9-49.5-57.3 0-36.3 27.5-57 64.5-61.7v124zM534.3 677V543.3c3.1.9 5.9 1.6 8.8 2.2 47.3 14.4 63.2 34.4 63.2 65.1 0 39.1-29.4 62.6-72 66.4z">
+                                                </path>
+                                            </svg>
+                                            <div class="text-right">
+                                                <span class="font-bold text-gray-800">
+                                                    {{orderItem.totalPrice | currency:'VND':'symbol':'1.0-0':'vi'}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pt-2 border-t border-gray-200">
+                                <div
+                                    class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                                    <div
+                                        class="w-full sm:w-auto flex flex-wrap items-center gap-4 border border-dashed border-orange-300 rounded-lg py-2 px-4 bg-orange-50">
+                                        <div *ngIf="order.paymentMethod === 'COD'" class="flex items-center gap-2">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-white p-1 shadow-sm flex items-center justify-center">
+                                                <img src="http://res.cloudinary.com/dpxcvonet/image/upload/v1742182099/electronics-sales/d55fbupi8hz7tpl4gqa3.png"
+                                                    alt="Thanh toán khi nhận hàng" class="w-6 h-6 object-contain">
+                                            </div>
+                                            <span class="text-sm font-medium">
+                                                Thanh toán khi nhận hàng
+                                            </span>
+                                        </div>
+                                        <div *ngIf="order.paymentMethod === 'MOMO'" class="flex items-center gap-2">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-white p-1 shadow-sm flex items-center justify-center">
+                                                <img src="http://res.cloudinary.com/dv8bcgtyh/image/upload/v1747576887/gh2itrcp4j3wkiwnktek.jpg"
+                                                    alt="Thanh toán trực tuyến" class="w-6 h-6 object-contain">
+                                            </div>
+                                            <span class="text-sm font-medium">
+                                                Thanh toán trực tuyến
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-white p-1 shadow-sm flex items-center justify-center">
+                                                <img src="http://res.cloudinary.com/dpxcvonet/image/upload/v1742182099/electronics-sales/ftm8nawmhyqglfnfmgfw.png"
+                                                    alt="Giao hàng nhanh" class="w-6 h-6 object-contain">
+                                            </div>
+                                            <span class="text-sm font-medium">
+                                                Giao hàng nhanh
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-end self-end sm:self-auto"><span
+                                            class="text-sm text-gray-500">Thành tiền:</span>
+                                        <div class="text-orange-500 flex items-center gap-1 text-xl font-bold">
+                                            <span>
+                                                {{order.totalPrice | currency:'VND':'symbol':'1.0-0':'vi'}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

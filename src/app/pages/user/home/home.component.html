@@ -1,0 +1,128 @@
+<div class="pt-19 pl-18 pr-18">
+  <div class="flex gap-5 w-[100%]">
+    <div class="py-4 px-0 w-[15%]">
+      <h2 class="text-xl mb-4 text-gray-500 uppercase font-semibold">
+        DANH MỤC
+      </h2>
+      <ul class="space-y-1">
+        <li *ngFor="let item of categories" [ngClass]="{'!text-[#FF8900] bg-gray-50': selectedCategoryId === item.id}"
+          class="py-2 px-2 cursor-pointer rounded hover:bg-gray-50 text-gray-700">
+          <a (click)="getProductByConditions(search, item.id!, selectedBrandId, selectedOrderBy)"
+            class="cursor-pointer flex justify-between items-center w-full h-full">
+            <span class="text-sm md:text-base font-medium truncate pr-2">
+              {{ truncateName(item.name) }}
+            </span>
+            <i class="fa-solid fa-chevron-right"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="flex flex-col gap-3 py-4 px-0 w-full">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="font-bold text-xl md:text-2xl ">Tất cả sản phẩm</h1>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-base text-gray-700 mr-3">
+            Sắp xếp theo
+          </span>
+          <div class="flex flex-wrap gap-2">
+            <button [ngClass]="{'!border-[#FF8900] !text-[#FF8900] !bg-orange-50' : selectedOrderBy === 'newest'}"
+              (click)="getProductByConditions(search, selectedCategoryId, selectedBrandId, 'newest')"
+              class="cursor-pointer border rounded-md px-3 py-1.5 flex items-center justify-center gap-2 text-sm transition-all border-gray-300 bg-white hover:bg-gray-50">
+              Mới nhất
+              <i [ngClass]="{'fa-solid fa-xmark pt-0.5' : selectedOrderBy === 'newest'}"></i>
+            </button>
+            <button [ngClass]="{'!border-[#FF8900] !text-[#FF8900] !bg-orange-50' : selectedOrderBy === 'bestseller'}"
+              (click)="getProductByConditions(search, selectedCategoryId, selectedBrandId, 'bestseller')"
+              class="cursor-pointer border rounded-md px-3 py-1.5 flex items-center justify-center gap-2 text-sm transition-all border-gray-300 bg-white hover:bg-gray-50">
+              Bán chạy
+              <i [ngClass]="{'fa-solid fa-xmark pt-0.5' : selectedOrderBy === 'bestseller'}"></i>
+            </button>
+            <select
+              class="cursor-pointer border rounded-md px-3 py-1.5 flex items-center justify-center gap-2 text-sm transition-all border-gray-300 bg-white hover:bg-gray-50 outline-none"
+              [(ngModel)]="selectedActive"
+              [ngClass]="{'!border-[#FF8900] !text-[#FF8900] !bg-orange-50' : selectedActive != ''}"
+              (change)="getProductByConditions(search, selectedCategoryId, selectedBrandId, $event)">
+              <option value="">Giá</option>
+              <option value="priceAsc">Tăng dần</option>
+              <option value="priceDesc">Giảm dần</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="products.length == 0" class="flex items-center justify-center flex-col w-full gap-10 pt-5">
+        <p class="text-gray-500 text-lg font-[600]">
+          Không có sản phẩm nào được tìm thấy
+        </p>
+        <img src="assets/images/box.png" alt="" width="230px">
+      </div>
+      <div *ngIf="products.length != 0" class="w-full">
+        <div
+          class="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
+          <a [href]='"/product-details?id="+product.id' class="w-full item-product"
+            *ngFor="let product of products; trackBy: trackById">
+            <div
+              class="flex flex-col h-full cursor-pointer rounded-lg border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div class="relative pt-[100%]">
+                <img [src]='product.mainImageUrl' [alt]='"Hình ảnh sản phẩm " + product.name'
+                  class="main-image absolute top-0 left-0 w-full h-full object-cover rounded-t-lg">
+              </div>
+              <div class="p-4 flex flex-col flex-grow bg-white rounded-b-lg">
+                <div class="flex justify-between items-center">
+                  <div class="flex items-center gap-1">
+                    <span class="text-gray-400 text-sm font-semibold line-through">
+                      {{product.price | currency:'VND':'symbol':'1.0-0':'vi' }}
+                    </span>
+                  </div>
+                  <span class="text-[#FF4943] text-sm font-semibold">
+                    {{product.discount}}%
+                  </span>
+                </div>
+                <span class="font-bold text-[#FF8900] text-lg">
+                  {{product.discountPrice | currency:'VND':'symbol':'1.0-0':'vi' }}
+                </span>
+                <h2 class="mt-2 text-base text-black line-clamp-2 flex-grow font-medium">
+                  {{product.name}}
+                </h2>
+                <div class="flex items-center justify-between mt-2">
+                  <div class="flex items-center gap-1">
+                    <i class="fa-solid fa-star text-[#FF8900]"></i>
+                    <span class="font-bold text-sm">{{product.star || 0}}/5</span>
+                  </div>
+                  <div class="flex gap-1 items-center text-gray-400 text-sm font-semibold">
+                    <p>Đã bán</p>
+                    <p>{{product.quantitySold}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div *ngIf="totalPages > 1" class="w-full flex justify-center items-center gap-1.5">
+        <button *ngIf="page > 0" class="cursor-pointer" (click)="changePage(0)"
+          class="flex w-10 h-7 p-1 justify-center items-center rounded cursor-pointer transition duration-250 bg-white text-black hover:bg-orange-500 hover:text-white">
+          Đầu
+        </button>
+        <button *ngIf="page > 0" class="cursor-pointer" (click)="changePage(page - 1)"
+          class="flex w-8 h-7 p-1 justify-center items-center rounded cursor-pointer transition duration-250 bg-white text-black hover:bg-orange-500 hover:text-white">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button *ngFor="let i of visiblePages" (click)="changePage(i)"
+          [ngClass]="{'bg-orange-500 text-white': page === i, 'bg-white text-black': page !== i}"
+          class="w-8 h-7 rounded hover:bg-orange-500 hover:text-white cursor-pointer">
+          {{ i + 1 }}
+        </button>
+        <button *ngIf="page < totalPages - 1" class="cursor-pointer" (click)="changePage(page + 1)"
+          class="flex w-8 h-7 p-1 justify-center items-center rounded cursor-pointer transition duration-250 bg-white text-black hover:bg-orange-500 hover:text-white">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <button *ngIf="page < totalPages - 1" class="cursor-pointer" (click)="changePage(totalPages - 1)"
+          class="flex w-10 h-7 px-5 justify-center items-center rounded cursor-pointer transition duration-250 bg-white text-black hover:bg-orange-500 hover:text-white">
+          Cuối
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
