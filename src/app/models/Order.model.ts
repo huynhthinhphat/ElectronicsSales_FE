@@ -17,4 +17,5 @@ export interface Order {
     toEstimateDate: Date;
     totalQuantity?: number;
     items: Product[];
+    createdAt?: Date
 }

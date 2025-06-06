@@ -230,8 +230,7 @@ export class ProductDetailsComponent implements OnInit {
       }
     ]
 
-    const productList = localStorage.getItem('productList');
-    if (productList) {
+    if (localStorage.getItem('productList')) {
       localStorage.removeItem('productList');
     }
     localStorage.setItem('productList', JSON.stringify(data));

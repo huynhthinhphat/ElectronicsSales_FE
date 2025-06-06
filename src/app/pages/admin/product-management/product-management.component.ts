@@ -309,7 +309,7 @@ export class ProductManagementComponent implements OnInit {
 
   onFilesSelected(event: Event): void {
     const files = this.imageService.onFilesSelected(event);
-    this.selectedImages.push(...files);
+    this.selectedImages = files;
     this.selectedImageUrls = files.map((file: Blob | MediaSource) => URL.createObjectURL(file));
   }
 
@@ -339,25 +339,33 @@ export class ProductManagementComponent implements OnInit {
 
     this.isCanActive = false;
     this.product.colors = Array.from(this.newColors);
+    this.product.brand = this.brandId;
+    this.product.category = this.categoryId;
 
     const uploadImages = (files: File[]) => files?.length ? this.imageService.uploadMultipleFiles(files) : of([]);
 
     forkJoin([
       uploadImages(this.currentImageFiles),
-      uploadImages(this.selectedImages)
+      uploadImages(this.selectedImages),
+      uploadImages(this.mainImage)
     ])
       .pipe(
-        tap(([contentUrls, galleryUrls]) => {
+        tap(([contentUrls, galleryUrls, mainImage]) => {
           if (contentUrls.length > 0) {
             this.convertImageInContent(contentUrls);
           }
+
           if (galleryUrls.length > 0) {
             this.product!.images = galleryUrls;
+          }
+          if (mainImage) {
+            this.product!.mainImageUrl = mainImage[0];
           }
         }),
         switchMap(() => this.imageService.deleteImages(this.oldImageUrls.filter(item => !this.currentImageUrls.includes(item)))),
         switchMap(() => this.productService.updateProduct(this.product!)),
         finalize(() => {
+          this.mainImage = [];
           this.oldImageUrls = [];
           this.newImageUrls = [];
           this.selectedImages = [];
@@ -365,6 +373,8 @@ export class ProductManagementComponent implements OnInit {
           this.currentImageFiles = [];
           this.isCanActive = true;
           this.isRedirectEditPage = false;
+          this.reset();
+          this.getAllProducts();
         }))
       .subscribe({
         next: (res: any) => {
@@ -444,12 +454,15 @@ export class ProductManagementComponent implements OnInit {
     }
 
     this.isCanActive = false;
-    forkJoin({
-      images: this.imageService.uploadMultipleFiles(this.selectedImages),
-      image: this.imageService.uploadMultipleFiles(this.mainImage),
-      imagesContent: this.imageService.uploadMultipleFiles(this.currentImageFiles)
-    }).subscribe({
-      next: ({ images, image, imagesContent }) => {
+
+    const uploadImages = (files: File[]) => files?.length ? this.imageService.uploadMultipleFiles(files) : of([]);
+
+    forkJoin([
+      uploadImages(this.currentImageFiles),
+      uploadImages(this.selectedImages),
+      uploadImages(this.mainImage)
+    ]).subscribe({
+      next: ([images, image, imagesContent]) => {
         this.product!.images = images;
         this.product!.mainImageUrl = image[0];
 
