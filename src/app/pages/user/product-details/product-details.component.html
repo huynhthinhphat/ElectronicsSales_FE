@@ -177,7 +177,7 @@
             Đánh giá sản phẩm
             ({{reviews.length}})
         </span>
-        <div class="flex gap-4">
+        <div class="flex gap-4" *ngIf="reviews.length > 0">
             <label for="stars" class="border text-orange-500 border-orange-500 p-2 rounded-[7px] cursor-pointer">
                 <select name="" id="stars" class="cursor-pointer outline-none" [(ngModel)]="orderBy"
                     (ngModelChange)="viewReviews()">
@@ -189,6 +189,9 @@
                     <option value="1">1 sao</option>
                 </select>
             </label>
+        </div>
+        <div *ngIf="reviews.length === 0" class="text-gray-500">
+            Chưa có bài đánh giá nào
         </div>
         <div *ngFor="let item of reviews; let reviewIndex = index" class="p-2 w-[40em] border-t-1 border-gray-300">
             <div class="flex gap-2 items-center">
@@ -232,5 +235,4 @@
             <i class="text-[20px] fa-solid fa-chevron-right"></i>
         </button>
     </div>
-
 </div>

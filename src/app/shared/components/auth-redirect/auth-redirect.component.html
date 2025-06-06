@@ -1,28 +1,4 @@
-<div *ngIf="role"
-    class="flex items-center justify-center h-screen bg-gradient-to-br from-blue-600 to-purple-700 text-white">
-    <div class="text-center space-y-6 animate-fade-in">
-        <h1 class="text-5xl font-bold tracking-wide drop-shadow-md">Welcome to Our App</h1>
-        <p class="text-lg opacity-90">Redirecting you to your dashboard in {{seconds}}s...</p>
-        <div class="flex justify-center mt-6">
-            <svg class="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-            </svg>
-        </div>
-    </div>
-</div>
-<div *ngIf="!role"
-    class="flex items-center justify-center h-screen bg-gradient-to-br from-orange-400 to-[#FF8900] text-white">
-    <div class="text-center space-y-6 animate-fade-in">
-        <h1 class="text-5xl font-bold tracking-wide drop-shadow-md">Welcome Back, User!</h1>
-        <p class="text-lg opacity-90">Redirecting you to my website in {{seconds}}s...</p>
-        <div class="flex justify-center mt-6">
-            <svg class="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-            </svg>
-        </div>
-    </div>
+<div class="w-full h-[100vh] flex flex-col justify-center items-center">
+    <div class="custom-spinner mt-2"></div>
+    Đang chuyển hướng
 </div>
