@@ -22,6 +22,7 @@ export class ForgotPasswordService {
     return this.http.post<Response<any>>(`${this.BASE_URL}/verify`, null, { params }).subscribe({
       next: (res: Response<any>) => {
         if (res.status === 'success') {
+          this.toastr.success(res.message)
           localStorage.setItem("userName", userName);
           if (localStorage.getItem("userName")) {
             this.router.navigate(['/change-password']);

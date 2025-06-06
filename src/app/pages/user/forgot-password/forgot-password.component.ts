@@ -42,6 +42,7 @@ export class ForgotPasswordComponent implements OnInit {
       this.forgotPasswordService.getOTP(this.userName).subscribe({
         next: (res) => {
           if (res) {
+            this.toastr.success(res?.message);
             this.isDisabled = true;
             this.startInterval();
           }

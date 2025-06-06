@@ -3,7 +3,7 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize, catchError, throwError } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
-import { Account } from '../model/Account.model';
+import { Account } from '../../models/Account.model';
 
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   const spinner = inject(NgxSpinnerService);
