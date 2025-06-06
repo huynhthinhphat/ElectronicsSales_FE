@@ -16,7 +16,6 @@ export class AuthRedirectComponent implements OnInit {
   ) { }
 
   role: boolean = false;
-  seconds: number = 2;
 
   ngOnInit(): void {
     const user = localStorage.getItem('user');
@@ -31,12 +30,6 @@ export class AuthRedirectComponent implements OnInit {
       })
     }
 
-    setInterval(() => {
-      if (this.seconds > 0) {
-        this.seconds -= 1;
-      }
-    }, 1000)
-
     setTimeout(() => {
       if (!user || !this.role) {
         this.router.navigate(['/home']);
@@ -45,6 +38,6 @@ export class AuthRedirectComponent implements OnInit {
       } else {
         this.router.navigate(['/home']);
       }
-    }, 2000);
+    }, 1000);
   }
 }
