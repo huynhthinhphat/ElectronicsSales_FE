@@ -47,7 +47,6 @@ export class CartComponent implements OnInit, CanComponentDeactivate {
   @HostListener('window:beforeunload', ['$event'])
   handleBeforeUnload(event: BeforeUnloadEvent) {
     if (this.isUpdate && this.cartItem.length > 0) {
-      localStorage.setItem('unsavedCart', JSON.stringify(this.getNonZeroItems()));
       this.deleteItemsSelected(this.getZeroItemIds());
       this.cartService.syncCartOnUnload(this.cartItem);
     }
@@ -57,29 +56,18 @@ export class CartComponent implements OnInit, CanComponentDeactivate {
     return this.cartItem.filter(item => item.quantity === 0).map(item => item.id!);
   }
 
-  private getNonZeroItems(): CartItem[] {
-    return this.cartItem.filter(item => item.quantity !== 0);
-  }
-
   trackById(index: number, item: CartItem): string {
     return item.id!;
   }
 
   viewItemsInCart() {
-    const cartJson = localStorage.getItem('unsavedCart');
-    if (!cartJson) {
-      this.cartService.viewItemsInCart().subscribe({
-        next: (res => {
-          if (res) {
-            this.cartItem = res.data as CartItem[];
-          }
-        })
+    this.cartService.viewItemsInCart().subscribe({
+      next: (res => {
+        if (res) {
+          this.cartItem = res.data as CartItem[];
+        }
       })
-      return;
-    }
-
-    this.cartItem = JSON.parse(cartJson) as CartItem[];
-    localStorage.removeItem('unsavedCart');
+    })
   }
 
   goToProductDetail(index: number) {
@@ -179,16 +167,18 @@ export class CartComponent implements OnInit, CanComponentDeactivate {
   async deleteItemsSelected(arr: string[] | null): Promise<boolean> {
     let listToDelete: string[] = arr ?? (this.selectedItemId ? [this.selectedItemId] : [...this.selectedItems]);
 
-    if (this.selectedItemId) {
-      this.behaviourWithItemSelection(this.selectedItemId, this.selectedItems);
-    }
+    // if (this.selectedItemId) {
+    //   this.behaviourWithItemSelection(this.selectedItemId, this.selectedItems);
+    // }
 
     try {
       const res = await this.cartService.deleteItemsInCart(listToDelete).toPromise();
       if (res?.status === 'success') {
         this.cartService.updateTotalQuantityOfCart(res.data.totalQuantity);
+
         this.cartItem = this.cartItem.filter(item => !listToDelete.includes(item.id!));
         this.selectedItems = this.selectedItems.filter(itemId => !listToDelete.includes(itemId));
+
         this.totalPrice = this.cartItem.reduce((sum, item) => sum + item.totalPrice!, 0);
         this.isShowToDelete = false;
         return true;

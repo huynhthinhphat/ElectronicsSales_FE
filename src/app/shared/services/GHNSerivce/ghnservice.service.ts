@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +10,6 @@ export class GHNService {
 
   constructor(private http: HttpClient) { }
 
-  private TOKEN = 'e762a303-2cff-11f0-9058-46b90fbc47f5';
-  private SHOPID = '5765625';
   private API_GET_PROVINCE = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/province';
   private API_GET_DISTRICT = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/district';
   private API_GET_WARD = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/ward';
@@ -18,8 +17,8 @@ export class GHNService {
 
   private headers = new HttpHeaders({
     'Content-Type': 'application/json',
-    'Token': this.TOKEN,
-    'ShopId': this.SHOPID
+    'Token': environment.GNHToken,
+    'ShopId': environment.SHOPID
   });
 
   getProvince(): Observable<any> {

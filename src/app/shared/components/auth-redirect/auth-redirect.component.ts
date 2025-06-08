@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Account } from '../../../models/Account.model';
 import { AuthService } from '../../services/AuthService/auth.service';
+import { CartService } from '../../services/CartService/cart.service';
 
 @Component({
   selector: 'app-auth-redirect',
@@ -12,7 +12,8 @@ import { AuthService } from '../../services/AuthService/auth.service';
 export class AuthRedirectComponent implements OnInit {
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private cartService: CartService
   ) { }
 
   role: boolean = false;
@@ -24,7 +25,8 @@ export class AuthRedirectComponent implements OnInit {
       this.authService.checkRole().subscribe({
         next: (res => {
           if (res) {
-            this.role = res;
+            this.role = res.role;
+            this.cartService.updateTotalQuantityOfCart(res.totalQuantity || 0);
           }
         })
       })

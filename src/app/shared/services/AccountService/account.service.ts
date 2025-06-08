@@ -1,8 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Account } from '../../../models/Account.model';
-import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
 import { Response } from '../../../models/Response.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CustomPage } from '../../../models/CustomPage.model';

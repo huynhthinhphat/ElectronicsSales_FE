@@ -104,8 +104,8 @@ export class AuthService {
     });
   }
 
-  checkRole(): Observable<any> {
-    return this.http.get<Observable<any>>(this.BASE_URL, { withCredentials: true });
+  checkRole(): Observable<Account> {
+    return this.http.get<Account>(this.BASE_URL, { withCredentials: true });
   }
 }
 

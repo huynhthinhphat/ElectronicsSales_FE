@@ -55,7 +55,7 @@ export class AccountDetailsComponent implements OnInit {
       this.email = this.convertString(user.email!);
       this.phoneNumber = this.convertString(user.phoneNumber!);
       this.dateOfBirth = this.convertString(user.dateOfBirth!);
-      this.gender = !user.gender ? 'Chưa cập nhật' : (user.gender ? 'Nam' : 'Nữ');
+      this.gender = user.gender === true ? 'Nam' : user.gender === false ? 'Nữ' : 'Chưa cập nhật';
       this.avatarUrl = user.avatarUrl!;
       this.address = this.convertString(user.address!);
     }
