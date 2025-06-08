@@ -43,6 +43,7 @@ import { ReviewManagementComponent } from './pages/admin/review-management/revie
 import { loadingInterceptor } from './core/interceptor/loading.interceptor';
 import { AccountManagementComponent } from './pages/admin/account-management/account-management.component';
 import { BrandManagementComponent } from './pages/admin/brand-management/brand-management.component';
+import { SkeletonLoaderComponent } from './shared/components/skeleton-loader/skeleton-loader.component';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,8 @@ import { BrandManagementComponent } from './pages/admin/brand-management/brand-m
     TrashProductManagementComponent,
     AuthRedirectComponent,
     ReviewComponent,
-    ReviewManagementComponent
+    ReviewManagementComponent,
+    SkeletonLoaderComponent
   ],
   imports: [
     FormsModule,

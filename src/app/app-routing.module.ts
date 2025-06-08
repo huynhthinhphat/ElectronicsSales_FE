@@ -57,7 +57,7 @@ const routes: Routes = [
       { path: 'home', component: HomeComponent },
       { path: 'product-details', component: ProductDetailsComponent },
       { path: 'checkout', component: CheckoutComponent, canActivate: [CheckoutGuardService] },
-      { path: 'checkout/success', component: CheckoutSuccessComponent },
+      { path: 'checkout/success', component: CheckoutSuccessComponent, canActivate: [CheckoutGuardService] },
       { path: 'checkout/cancel', component: CheckoutCancelComponent, canActivate: [CheckoutGuardService] },
       { path: 'cart', component: CartComponent, canActivate: [CheckoutGuardService], canDeactivate: [LeaveCheckGuard] },
       {

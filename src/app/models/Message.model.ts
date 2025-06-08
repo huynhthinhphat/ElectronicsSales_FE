@@ -22,7 +22,7 @@ export const Message = {
     MISSING_BRAND_NAME: 'Vui lòng nhập tên thương hiệu',
     MISSING_COLOR_SELECTION_TO_PAY: 'Vui lòng chọn màu sản phẩm trước khi thanh toán',
     MISSING_COLOR_SELECTION_TO_ADD_CART: 'Vui lòng chọn màu sản phẩm trước khi thêm vào giỏ hàng',
-    MISSING_ADDRESS: 'Vui lòng nhập địa chỉ đầy đủ trước khi cập nhật',
+    MISSING_ADDRESS: 'Vui lòng nhập địa chỉ chính xác trước khi đặt hàng',
     MISSING_INFOR_FOR_ORDER: 'Vui lòng nhập thông tin đầy đủ trước khi lưu',
     MISSING_OF_ADDRESS: 'Vui lòng nhập đầy đủ thông tin chi tiết địa chỉ cần giao hàng!',
     MISSING_CATEGORY_NAME_WHEN_CREATE: 'Vui lòng chọn tên thể loại',
@@ -34,6 +34,7 @@ export const Message = {
     MISSING_COLORS_WHEN_CREATE: 'Vui lòng chọn 1 nhất 1 màu cho sản phẩm',
     MISSING_NUMBER_STARS: 'Vui lòng chọn số sao để đánh giá sản phẩm',
 
+    INVALID_SKU: 'Mã sản phẩm không được chứa dấu cách',
     INVALID_QUANTITY: 'Số lượng không hợp lệ',
     INVALID_PHONE_NUMBER: 'Số điện thoại không hợp lệ',
     INVALID_QUANTITY_OF_PRODUCT: (productName: string) =>

@@ -1,11 +1,10 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { Subject, Subscription, debounceTime } from 'rxjs';
 import { Account } from '../../../models/Account.model';
 import { Message } from '../../../models/Message.model';
 import { AccountService } from '../../../shared/services/AccountService/account.service';
 import { ImageService } from '../../../shared/services/ImageService/image.service';
-import { LocationService } from '../../../shared/services/LocationService/location-service.service';
+import { GHNService } from '../../../shared/services/GHNSerivce/ghnservice.service';
 
 @Component({
   selector: 'app-account-details',
@@ -14,20 +13,13 @@ import { LocationService } from '../../../shared/services/LocationService/locati
   styleUrl: './account-details.component.css'
 })
 export class AccountDetailsComponent implements OnInit {
-  @ViewChild('inputEmail') inputEmail !: ElementRef;
-  @ViewChild('inputFullName') inputFullName !: ElementRef;
-  @ViewChild('inputPhoneNumber') inputPhoneNumber !: ElementRef;
-  @ViewChild('inputDateOfBirth') inputDateOfBirth !: ElementRef;
-
   constructor(
     private toastr: ToastrService,
     private imageService: ImageService,
     private accountService: AccountService,
-    private locationService: LocationService
+    private GHNService: GHNService
   ) { };
 
-  private inputAddress = new Subject<string>();
-  private addressSub!: Subscription;
   gender: any = '';
   email: string = '';
   address: string = '';
@@ -35,19 +27,19 @@ export class AccountDetailsComponent implements OnInit {
   fullName: string = '';
   avatarUrl: string = '';
   phoneNumber: string = '';
-  suggestions: string[] = [];
   isAllowEdit: boolean = false;
+  indexProvince: number = -1;
+  indexDistrict: number = -1;
+  indexWard: number = -1;
+  houseAddress: string = '';
+  provinces: { ProvinceID: -1, ProvinceName: '' }[] = [];
+  districts: { DistrictID: -1, DistrictName: '' }[] = [];
+  wards: { WardID: -1, WardName: '' }[] = [];
 
   ngOnInit(): void {
+    this.getProvinces();
     this.showInfor();
     this.loadImg();
-    this.setupAutoComplete();
-  }
-
-  ngOnDestroy(): void {
-    if (this.addressSub) {
-      this.addressSub.unsubscribe();
-    }
   }
 
   private loadImg() {
@@ -63,8 +55,8 @@ export class AccountDetailsComponent implements OnInit {
       this.email = this.convertString(user.email!);
       this.phoneNumber = this.convertString(user.phoneNumber!);
       this.dateOfBirth = this.convertString(user.dateOfBirth!);
-      this.gender = this.convertGender(user.gender);
-      this.avatarUrl = user.avatarUrl as string;
+      this.gender = !user.gender ? 'Chưa cập nhật' : (user.gender ? 'Nam' : 'Nữ');
+      this.avatarUrl = user.avatarUrl!;
       this.address = this.convertString(user.address!);
     }
   }
@@ -73,8 +65,8 @@ export class AccountDetailsComponent implements OnInit {
     return str != null ? str : 'Chưa cập nhật';
   }
 
-  private convertGender(gender: boolean | null | undefined): string {
-    return gender === null || gender === undefined ? 'Chưa cập nhật' : (gender ? 'Nam' : 'Nữ');
+  private setValueFields(data: any): any {
+    return data !== 'Chưa cập nhật' ? data : null;
   }
 
   allowEdit() {
@@ -89,29 +81,35 @@ export class AccountDetailsComponent implements OnInit {
       return;
     }
 
-    this.fullName = this.checkAndConvertValue(this.inputFullName.nativeElement.value.trim(), user.fullName?.trim());
-    this.email = this.checkAndConvertValue(this.inputEmail.nativeElement.value.trim(), user.email?.trim());
-    this.phoneNumber = this.checkAndConvertValue(this.inputPhoneNumber.nativeElement.value.trim(), user.phoneNumber?.trim());
-    this.dateOfBirth = this.checkAndConvertValue(this.inputDateOfBirth.nativeElement.value, user.dateOfBirth);
-    this.address = this.checkAndConvertValue(this.address?.trim(), user.address?.trim());
+    this.fullName = this.checkAndConvertValue(this.fullName.trim(), user.fullName?.trim());
+    this.email = this.checkAndConvertValue(this.email.trim(), user.email?.trim());
+    this.phoneNumber = this.checkAndConvertValue(this.phoneNumber.trim(), user.phoneNumber?.trim());
+    this.dateOfBirth = this.checkAndConvertValue(this.dateOfBirth, user.dateOfBirth);
     this.gender = this.gender === 'Chưa cập nhật' ? null : (this.gender == 'Nam');
+
+    let newAdress = user.address!;
+    if (this.indexProvince !== -1 && this.indexDistrict !== -1 && this.indexWard !== -1 && this.houseAddress) {
+      newAdress = this.setAddress();
+    }
+    this.address = user.address === newAdress ? user.address : newAdress;
 
     this.accountService.updateUserInformation(this.toNewUserInfor())?.subscribe({
       next: (res => {
-        localStorage.removeItem('user')
+        res.data.id = user.id;
         localStorage.setItem('user', JSON.stringify(res.data));
-
-        this.showInfor();
-        this.allowEdit();
 
         this.accountService.updateEmail(this.email);
         this.accountService.updateFullName(this.fullName);
 
         this.toastr.success(res.message);
-        return;
-      })
+      }),
+      error: () => {
+        this.gender = this.gender == true ? 'Nam' : 'Nữ';
+      },
+      complete: () => {
+        this.allowEdit();
+      }
     });
-    this.showInfor();
   }
 
   private toNewUserInfor(): Account {
@@ -127,47 +125,33 @@ export class AccountDetailsComponent implements OnInit {
   }
 
   private checkAndConvertValue(newValue: any, oldValue: any): any {
-    return newValue === '' || newValue.length === 0 ? null : newValue !== oldValue ? newValue : oldValue;
-  }
-
-  private setValueFields(data: any): any {
-    return data !== 'Chưa cập nhật' ? data : null;
+    return newValue === '' || newValue.length === 0 ? null : (newValue !== oldValue ? newValue : oldValue);
   }
 
   onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      if (!file.type.startsWith('image/')) {
-        this.toastr.error(Message.ERROR_INVALID_FILE_IMAGE);
-        return;
-      }
-
-      if (file.size / (1024 * 1024) > 2) {
-        this.toastr.error(Message.ERROR_OVER_SZIE_FILE_IMAGE);
-        return;
-      }
-
-      this.updateAvatarImage(file);
-    }
+    this.updateAvatarImage(this.imageService.onFilesSelected(event));
   }
 
-  private updateAvatarImage(file: File) {
+  private updateAvatarImage(file: File[]) {
     const user = this.accountService.getUserInfor();
     if (user) {
-      this.imageService.uploadFileAndGetImageName(file).subscribe({
-        next: (secureUrl: string) => {
+      this.imageService.uploadMultipleFiles(file).subscribe({
+        next: (secureUrl: string[]) => {
           if (secureUrl) {
-            user.avatarUrl = secureUrl;
+            user.avatarUrl = secureUrl[0];
+
             this.accountService.updateUserInformation(user)?.subscribe({
               next: ((res) => {
                 localStorage.removeItem('user');
+
+                res.data.id = user.id;
                 localStorage.setItem('user', JSON.stringify(res.data));
 
-                this.imageService.updateImageUrl(secureUrl);
                 this.toastr.success(res.message)
-              })
+              }),
+              complete: () => {
+                this.imageService.updateImageUrl(secureUrl[0]);
+              }
             });
           }
         },
@@ -182,24 +166,71 @@ export class AccountDetailsComponent implements OnInit {
     return value === 'Chưa cập nhật' ? 'text-gray-400' : 'font-semibold';
   }
 
-  private setupAutoComplete(): void {
-    this.inputAddress.pipe(
-      debounceTime(2000)
-    ).subscribe((address: string) => {
-      if (this.isAllowEdit) {
-        this.locationService.autoComplete(address).subscribe((res: any) => {
-          if (res.predictions.length > 0) {
-            this.suggestions = res.predictions.map((item: any) => item.description);
+  getProvinces() {
+    this.GHNService.getProvince().subscribe({
+      next: (res => {
+        if (res?.data) {
+          for (let province of res.data) {
+            this.provinces.push(province);
           }
-        });
-      }
-    });
+        }
+      })
+    })
   }
 
-  getLocations(event: Event) {
-    this.address = (event.target as HTMLInputElement).value;
-    if (this.address.trim().length > 0) {
-      this.inputAddress.next(this.address)
+  getDistricts(event: Event) {
+    this.districts = [];
+    this.wards = [];
+    const target = event.target as HTMLSelectElement;
+    const value = Number(target.value);
+
+    if (value !== -1) {
+      this.GHNService.getDistrict({ province_id: value }).subscribe({
+        next: (res => {
+          if (res?.data) {
+            for (let district of res.data) {
+              this.districts.push(district);
+            }
+          }
+        }),
+        complete: () => {
+          this.indexProvince = target.selectedIndex;
+          this.indexWard = -1;
+          this.houseAddress = '';
+        }
+      })
     }
+  }
+
+  getWards(event: Event) {
+    this.wards = [];
+    const target = event.target as HTMLSelectElement;
+    const value = Number(target.value);
+
+    if (value !== -1) {
+      this.GHNService.getWard({ district_id: value }).subscribe({
+        next: (res => {
+          if (res?.data) {
+            for (let ward of res.data) {
+              this.wards.push(ward);
+            }
+          }
+        }),
+        complete: () => {
+          this.indexDistrict = target.selectedIndex;
+        }
+      })
+    }
+  }
+
+  setIndexWards(event: Event) {
+    this.indexWard = Number((event.target as HTMLSelectElement).selectedIndex);
+  }
+
+  setAddress(): string {
+    return this.houseAddress.trim() + ', ' +
+      this.wards[this.indexWard - 1].WardName.trim() + ', ' +
+      this.districts[this.indexDistrict - 1].DistrictName.trim() + ', ' +
+      this.provinces[this.indexProvince - 1].ProvinceName.trim();
   }
 }

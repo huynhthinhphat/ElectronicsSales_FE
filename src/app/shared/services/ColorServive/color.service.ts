@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Response as ApiResponse } from '../../../models/Response.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ColorService {
-  private BASE_URL = 'http://localhost:8090/api/colors';
+  private BASE_URL = environment.apiUrl + '/api/colors';
 
   constructor(
     private http: HttpClient,

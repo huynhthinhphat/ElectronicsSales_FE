@@ -327,7 +327,7 @@ export class ProductManagementComponent implements OnInit {
 
   onFilesSelectedForMainImage(event: Event): void {
     const files = this.imageService.onFilesSelected(event);
-    this.mainImage.push(...files);
+    this.mainImage = files;
 
     if (this.product) {
       this.product.mainImageUrl = URL.createObjectURL(files[0]);
@@ -336,6 +336,11 @@ export class ProductManagementComponent implements OnInit {
 
   updateProduct(): void {
     if (!this.product) return;
+
+    if (this.product.sku!.trim().includes(' ')) {
+      this.toastr.error(Message.INVALID_SKU);
+      return;
+    }
 
     this.isCanActive = false;
     this.product.colors = Array.from(this.newColors);
@@ -368,7 +373,6 @@ export class ProductManagementComponent implements OnInit {
           this.mainImage = [];
           this.oldImageUrls = [];
           this.newImageUrls = [];
-          this.selectedImages = [];
           this.currentImageUrls = [];
           this.currentImageFiles = [];
           this.isCanActive = true;
@@ -381,8 +385,7 @@ export class ProductManagementComponent implements OnInit {
           if (res?.message) {
             this.toastr.success(res.message);
           }
-        },
-        error: (err) => this.toastr.error(err)
+        }
       });
   }
 
@@ -420,6 +423,11 @@ export class ProductManagementComponent implements OnInit {
   addProduct() {
     if (!this.product?.sku) {
       this.toastr.error(Message.MISSING_SKU_WHEN_CREATE);
+      return;
+    }
+
+    if (this.product.sku.trim().includes(' ')) {
+      this.toastr.error(Message.INVALID_SKU);
       return;
     }
 
@@ -462,12 +470,16 @@ export class ProductManagementComponent implements OnInit {
       uploadImages(this.selectedImages),
       uploadImages(this.mainImage)
     ]).subscribe({
-      next: ([images, image, imagesContent]) => {
-        this.product!.images = images;
-        this.product!.mainImageUrl = image[0];
+      next: ([contentUrls, galleryUrls, mainImage]) => {
+        if (contentUrls.length > 0) {
+          this.convertImageInContent(contentUrls);
+        }
 
-        if (imagesContent.length > 0) {
-          this.convertImageInContent(imagesContent);
+        if (galleryUrls.length > 0) {
+          this.product!.images = galleryUrls;
+        }
+        if (mainImage) {
+          this.product!.mainImageUrl = mainImage[0];
         }
 
         if (this.newColors) {
@@ -484,6 +496,14 @@ export class ProductManagementComponent implements OnInit {
           }),
           error: () => this.isCanActive = true,
           complete: () => {
+            this.mainImage = [];
+            this.oldImageUrls = [];
+            this.newImageUrls = [];
+            this.selectedImages = [];
+            this.currentImageUrls = [];
+            this.currentImageFiles = [];
+            this.isCanActive = true;
+            this.isRedirectEditPage = false;
             this.reset();
             this.isCanActive = true;
             this.isRedirectEditPage = false;
@@ -491,7 +511,6 @@ export class ProductManagementComponent implements OnInit {
         })
       },
       error: (err) => {
-        this.toastr.error(err);
         this.isCanActive = true;
       }
     });

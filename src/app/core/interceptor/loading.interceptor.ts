@@ -4,10 +4,13 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize, catchError, throwError } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { Account } from '../../models/Account.model';
+import { Router } from '@angular/router';
 
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
+
   const spinner = inject(NgxSpinnerService);
   const toastr = inject(ToastrService);
+  const router = inject(Router);
 
   const userLocalStorage = localStorage.getItem('user');
   const user: Account = userLocalStorage ? JSON.parse(userLocalStorage) : null;
@@ -19,14 +22,14 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error) => {
       if (error instanceof HttpErrorResponse) {
-        const res = error.error as { message?: string };
-        if (res.message === 'Phiên đăng nhập đã hết hạn! Vui lòng đăng nhập lại!') {
+        if (error.status === 401) {
           setTimeout(() => {
-            location.href = '/login';
             localStorage.removeItem('user');
+            location.href = '/login';
+            router.navigate(['/login'], { replaceUrl: true });
           }, 2000)
         }
-        console.error(error)
+        const res = error.error as { message?: string };
         toastr.error(res?.message || 'Đã xảy ra lỗi không xác định!');
       }
       return throwError(() => error);

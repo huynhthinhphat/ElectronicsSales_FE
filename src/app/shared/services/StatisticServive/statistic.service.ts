@@ -6,12 +6,13 @@ import { Observable } from 'rxjs';
 import { CustomList } from '../../../models/CustomList.model';
 import { Product } from '../../../models/Product.model';
 import { DailyRevenue } from '../../../models/DailyRevenue.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StatisticService {
-  private BASE_URL = 'http://localhost:8090/api/statistics';
+  private BASE_URL = environment.apiUrl + '/api/statistics';
 
   constructor(private http: HttpClient) { }
 

@@ -94,6 +94,7 @@ export class ReviewManagementComponent implements OnInit {
     this.page = 0;
     this.keyWord = '';
     this.limit = 20;
+    this.star = '';
     this.viewReview();
   }
 

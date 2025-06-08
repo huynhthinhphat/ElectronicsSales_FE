@@ -4,12 +4,13 @@ import { Review } from '../../../models/Review.model';
 import { Observable } from 'rxjs';
 import { Response as ApiResponse } from '../../../models/Response.model';
 import { CustomPage } from '../../../models/CustomPage.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReviewService {
-  private BASE_URL = 'http://localhost:8090/api/reviews';
+  private BASE_URL = environment.apiUrl + '/api/reviews';
 
   constructor(
     private http: HttpClient

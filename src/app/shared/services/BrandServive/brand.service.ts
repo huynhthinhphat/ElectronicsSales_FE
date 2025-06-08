@@ -5,12 +5,13 @@ import { Category } from '../../../models/Category.model';
 import { CustomPage } from '../../../models/CustomPage.model';
 import { Response as ApiResponse } from '../../../models/Response.model';
 import { Brand } from '../../../models/Brand.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BrandService {
-  private BASE_URL = 'http://localhost:8090/api/brands';
+  private BASE_URL = environment.apiUrl + '/api/brands';
   private brand = new BehaviorSubject<any>('');
   sharedData$ = this.brand.asObservable();
 
