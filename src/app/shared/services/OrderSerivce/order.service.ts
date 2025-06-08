@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Response as ApiResponse } from '../../../models/Response.model';
 import { Order } from '../../../models/Order.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { Order } from '../../../models/Order.model';
 export class OrderService {
   constructor(private http: HttpClient) { }
 
-  private BASE_URL = 'http://localhost:8090/api/orders';
+  private BASE_URL = environment.apiUrl + '/api/orders';
 
   createOrder(data: Order): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.BASE_URL}`, data, { withCredentials: true });

@@ -4,6 +4,7 @@ import { ToastrService } from 'ngx-toastr';
 import { forkJoin, BehaviorSubject, Observable, catchError, map, throwError } from 'rxjs';
 import { Message } from '../../../models/Message.model';
 import { Cloudinary } from '../../../models/Cloudinary.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class ImageService {
 
   private cloudinaryUrl = 'https://api.cloudinary.com/v1_1/dv8bcgtyh/image/upload';
   private cloudinaryPreset = 'upload-img-electronicsales';
-  private BASE_URL = 'http://localhost:8090/api/images';
+  private BASE_URL = environment.apiUrl + '/api/images';
 
   updateImageUrl(url: string) {
     this.imageUrlSubject.next(url);

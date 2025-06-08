@@ -193,8 +193,9 @@
                         </span>
                     </td>
                     <td class="p-4 text-left">
-                        <span class="text-gray-700">
-                            {{product.star || 0}}<i class="fa-solid fa-star text-yellow-500"></i>
+                        <span class="text-gray-700 whitespace-nowrap">
+                            <i class="fa-solid fa-star text-yellow-500"></i>
+                            {{product.star || 0}}
                         </span>
                     </td>
                     <td class="p-4 flex justify-center">
@@ -365,7 +366,7 @@
                             (ngModelChange)="getCurrentImageInContent()">
                         </angular-editor>
                     </div>
-                    <div class="custom-spinner mt-2" *ngIf="!isCanActive"></div>
+                    <app-skeleton-loader class="mt-2" *ngIf="!isCanActive"></app-skeleton-loader>
                 </div>
                 <div>
                     <label class="text-sm font-medium">
@@ -422,7 +423,7 @@
                         <img [src]="image" [alt]="'Ảnh ' + i" class="h-20 w-20 object-fill bg-gray-100 rounded-lg">
                     </div>
                 </div>
-                <div class="custom-spinner mt-2" *ngIf="!isCanActive"></div>
+                <app-skeleton-loader class="mt-2" *ngIf="!isCanActive"></app-skeleton-loader>
             </div>
             <div class="w-1/4">
                 <label class="block text-sm font-medium mb-2 mt-4">

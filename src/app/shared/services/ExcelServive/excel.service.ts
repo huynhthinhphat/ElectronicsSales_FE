@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExcelService {
-  private BASE_URL = 'http://localhost:8090/api/excel';
+  private BASE_URL = environment.apiUrl + '/api/excel';
 
   constructor(
     private http: HttpClient

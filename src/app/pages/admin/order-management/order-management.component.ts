@@ -125,6 +125,7 @@ export class OrderManagementComponent implements OnInit {
     this.status = ''
     this.transaction = '';
     this.delivery = '';
+    this.initDate();
     this.viewOrders();
   }
 

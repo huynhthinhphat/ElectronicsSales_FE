@@ -34,7 +34,7 @@ export class GHNService {
     return this.http.post<any>(`${this.API_GET_WARD}`, data, { headers: this.headers });
   }
 
-  estimateTime(data: { from_district_id: number, from_ward_code: string, to_district_id: number, to_ward_code: number, service_id: number }): Observable<any> {
+  estimateTime(data: { from_district_id: number, from_ward_code: string, to_district_id: number, to_ward_code: string, service_id: number }): Observable<any> {
     return this.http.post<any>(`${this.API_ESTIMATE_TIME}`, data, { headers: this.headers });
   }
 }

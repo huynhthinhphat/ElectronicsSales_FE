@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Subject, Subscription, debounceTime } from 'rxjs';
-import { Account } from '../../../models/Account.model';
+import { switchMap, tap } from 'rxjs';
 import { Message } from '../../../models/Message.model';
 import { Order } from '../../../models/Order.model';
 import { Product } from '../../../models/Product.model';
-import { LocationService } from '../../../shared/services/LocationService/location-service.service';
 import { OrderService } from '../../../shared/services/OrderSerivce/order.service';
 import { PayosService } from '../../../shared/services/PayOSSerivce/payos.service';
 import { GHNService } from '../../../shared/services/GHNSerivce/ghnservice.service';
+import { AccountService } from '../../../shared/services/AccountService/account.service';
 
 @Component({
   selector: 'app-checkout',
@@ -22,14 +21,12 @@ export class CheckoutComponent implements OnInit {
     private GHNService: GHNService,
     private toastr: ToastrService,
     private orderService: OrderService,
-    private locationService: LocationService,
     private payosService: PayosService,
-    private router: Router
+    private router: Router,
+    private accountService: AccountService
   ) { }
 
-  private inputAddress = new Subject<string>();
-  private addressSub!: Subscription;
-  wardId: number = 0;
+  wardId: string = '';
   seconds: number = 10;
   provinceId: number = 0;
   districtId: number = 0;
@@ -51,54 +48,48 @@ export class CheckoutComponent implements OnInit {
   phoneNumber: string = 'Chưa cập nhật';
   deliveryMethod: string = 'FAST_DELIVERY';
   isInforFull: boolean = true;
+  isLoading: boolean = true;
   isShowDialog: boolean = false;
   isShowAcceptDialog: boolean = false;
   products: Product[] = [];
   suggestions: string[] = [];
   intervalId: any;
+  indexProvince: number = -1;
+  indexDistrict: number = -1;
+  indexWard: number = -1;
+  houseAddress: string = '';
+  provinces: { ProvinceID: -1, ProvinceName: '' }[] = [];
+  districts: { DistrictID: -1, DistrictName: '' }[] = [];
+  wards: { WardID: -1, WardName: '' }[] = [];
 
   ngOnInit(): void {
     this.setUser();
     this.setProductList();
-    this.setupAutoComplete();
-  }
-
-  ngOnDestroy(): void {
-    if (this.addressSub) {
-      this.addressSub.unsubscribe();
-    }
+    this.getProvinces();
   }
 
   setUser() {
-    const userStr = localStorage.getItem("user");
-    const user: Account = userStr ? JSON.parse(userStr) : null;
+    const user = this.accountService.getUserInfor();
     if (user) {
-      if (user.fullName == null || user.phoneNumber == null || user.address == null) {
+      if (!user.fullName || !user.phoneNumber || !user.address) {
         this.isInforFull = false;
+        this.isLoading = false;
         return;
       }
 
-      if (user.fullName) {
-        this.fullName = user.fullName;
-      }
-      if (user.phoneNumber) {
-        this.phoneNumber = user.phoneNumber;
-      }
-      if (user.address) {
-        this.address = user.address;
-        if (this.address.length > 0) {
-          const parts = this.address.split(',');
-          if (parts.length < 4) {
-            this.isInforFull = false;
-            this.toastr.error(Message.MISSING_OF_ADDRESS);
-            return;
-          }
+      this.fullName = user.fullName;
+      this.phoneNumber = user.phoneNumber;
+      this.address = user.address;
+      if (this.address.length > 0) {
+        const parts = this.address.split(',');
+
+        if (parts.length > 0) {
           this.provinceName = parts[parts.length - 1].trim();
           this.districtName = parts[parts.length - 2].trim();
           this.wardName = parts[parts.length - 3].trim();
-
-          this.getEstimateTime();
         }
+
+        this.getEstimateTime();
       }
     }
   }
@@ -138,9 +129,9 @@ export class CheckoutComponent implements OnInit {
   }
 
   getEstimateTime() {
-    this.GHNService.getProvince().subscribe({
-      next: (res => {
-        if (res && res.data && res.data.length > 0) {
+    this.GHNService.getProvince().pipe(
+      tap(res => {
+        if (res?.data?.length > 0) {
           for (let i = 0; i < res.data.length - 1; i++) {
             for (let province of res.data) {
               for (let nameExtension of province.NameExtension) {
@@ -151,43 +142,44 @@ export class CheckoutComponent implements OnInit {
               }
             }
           }
-          this.GHNService.getDistrict({ province_id: this.provinceId }).subscribe({
-            next: (res => {
-              if (res && res.data && res.data.length > 0) {
-                for (let district of res.data) {
-                  for (let nameExtension of district.NameExtension) {
-                    if (this.normalizeText(this.districtName).includes(this.normalizeText(nameExtension))) {
-                      this.districtId = district.DistrictID;
-                      break;
-                    }
-                  }
-                }
-                this.GHNService.getWard({ district_id: this.districtId }).subscribe({
-                  next: (res => {
-                    if (res && res.data && res.data.length > 0) {
-                      for (let ward of res.data) {
-                        for (let nameExtension of ward.NameExtension) {
-                          if (this.normalizeText(this.wardName).includes(this.normalizeText(nameExtension))) {
-                            this.wardId = ward.WardCode;
-                            break;
-                          }
-                        }
-                      }
-                      this.GHNService.estimateTime({ from_district_id: 1662, from_ward_code: '370105', to_district_id: this.districtId, to_ward_code: this.wardId, service_id: 100039 }).subscribe({
-                        next: (res => {
-                          const leadTimeOrder = res.data.leadtime_order;
-                          this.fromEstimateDate = leadTimeOrder.from_estimate_date;
-                          this.toEstimateDate = leadTimeOrder.to_estimate_date;
-                        })
-                      })
-                    }
-                  })
-                })
-              }
-            })
-          })
         }
-      })
+      }),
+      switchMap(() => this.GHNService.getDistrict({ province_id: this.provinceId })),
+      tap(res => {
+        if (res && res.data && res.data.length > 0) {
+          for (let district of res.data) {
+            for (let nameExtension of district.NameExtension) {
+              if (this.normalizeText(this.districtName).includes(this.normalizeText(nameExtension))) {
+                this.districtId = district.DistrictID;
+                break;
+              }
+            }
+          }
+        }
+      }),
+      switchMap(() => this.GHNService.getWard({ district_id: this.districtId })),
+      tap(res => {
+        if (res && res.data && res.data.length > 0) {
+          for (let ward of res.data) {
+            for (let nameExtension of ward.NameExtension) {
+              if (this.normalizeText(this.wardName).includes(this.normalizeText(nameExtension))) {
+                this.wardId = ward.WardCode;
+                break;
+              }
+            }
+          }
+        }
+      }),
+      switchMap(() => this.GHNService.estimateTime({ from_district_id: 1662, from_ward_code: '370105', to_district_id: this.districtId, to_ward_code: this.wardId, service_id: 100039 }))
+    ).subscribe({
+      next: (res => {
+        const leadTimeOrder = res.data.leadtime_order;
+        this.fromEstimateDate = leadTimeOrder.from_estimate_date;
+        this.toEstimateDate = leadTimeOrder.to_estimate_date;
+      }),
+      complete: () => {
+        this.isLoading = false;
+      }
     })
   }
 
@@ -211,6 +203,7 @@ export class CheckoutComponent implements OnInit {
 
   showAcceptDialog() {
     this.isShowAcceptDialog = !this.isShowAcceptDialog;
+
     this.intervalId = setInterval(() => {
       this.seconds -= 1;
       if (this.seconds === 0) {
@@ -228,15 +221,16 @@ export class CheckoutComponent implements OnInit {
 
   saveNewInforForCurrentOrder() {
     let isMissing: boolean = false;
-    if (!this.newFullName || this.newFullName === '') {
+
+    if (!this.newFullName) {
       isMissing = true;
     }
 
-    if (!this.newAddress || this.newAddress === '') {
+    if (!this.newPhoneNumber) {
       isMissing = true;
     }
 
-    if (!this.newPhoneNumber || this.newPhoneNumber == '') {
+    if (this.indexProvince === -1 || this.indexDistrict === -1 || this.indexWard === -1 || !this.houseAddress) {
       isMissing = true;
     }
 
@@ -250,52 +244,16 @@ export class CheckoutComponent implements OnInit {
       return;
     }
 
-    let isChange: boolean = false;
+    this.fullName = this.newFullName;
+    this.address = this.setAddress();
+    this.phoneNumber = this.newPhoneNumber;
 
-    if (this.newFullName !== this.fullName) {
-      isChange = true;
-    }
-
-    if (this.newAddress !== this.address) {
-      isChange = true;
-    }
-
-    if (this.newPhoneNumber !== this.phoneNumber) {
-      isChange = true;
-    }
-
-    if (isChange) {
-      this.fullName = this.newFullName;
-      this.address = this.newAddress;
-      this.phoneNumber = this.newPhoneNumber;
-      this.toastr.success(Message.SUCCESS_CUSTOM_INFOR_FOR_ORDER);
-      this.isShowDialog = !this.isShowDialog;
-    }
+    this.isShowDialog = !this.isShowDialog;
+    this.toastr.success(Message.SUCCESS_CUSTOM_INFOR_FOR_ORDER);
   }
 
   stopClickPropagation(event: MouseEvent) {
     event.stopPropagation();
-  }
-
-  private setupAutoComplete(): void {
-    this.inputAddress.pipe(
-      debounceTime(2000)
-    ).subscribe((address: string) => {
-      if (this.isShowDialog) {
-        this.locationService.autoComplete(address).subscribe((res: any) => {
-          if (res.predictions.length > 0) {
-            this.suggestions = res.predictions.map((item: any) => item.description);
-          }
-        });
-      }
-    });
-  }
-
-  getLocations(event: Event) {
-    this.newAddress = (event.target as HTMLInputElement).value;
-    if (this.newAddress.trim().length > 0) {
-      this.inputAddress.next(this.newAddress)
-    }
   }
 
   pay() {
@@ -337,6 +295,7 @@ export class CheckoutComponent implements OnInit {
             if (item) {
               data.id = item.id;
               data.orderCode = item.orderCode;
+
               this.payosService.createOrder(data).subscribe({
                 next: (res => {
                   if (res && res.body && res.body.code === '00') {
@@ -359,5 +318,73 @@ export class CheckoutComponent implements OnInit {
         this.hiddenAcceptDialog();
       }
     })
+  }
+
+  getProvinces() {
+    this.GHNService.getProvince().subscribe({
+      next: (res => {
+        if (res?.data) {
+          for (let province of res.data) {
+            this.provinces.push(province);
+          }
+        }
+      })
+    })
+  }
+
+  getDistricts(event: Event) {
+    this.districts = [];
+    this.wards = [];
+    const target = event.target as HTMLSelectElement;
+    const value = Number(target.value);
+
+    if (value !== -1) {
+      this.GHNService.getDistrict({ province_id: value }).subscribe({
+        next: (res => {
+          if (res?.data) {
+            for (let district of res.data) {
+              this.districts.push(district);
+            }
+          }
+        }),
+        complete: () => {
+          this.indexProvince = target.selectedIndex;
+          this.indexWard = -1;
+          this.houseAddress = '';
+        }
+      })
+    }
+  }
+
+  getWards(event: Event) {
+    this.wards = [];
+    const target = event.target as HTMLSelectElement;
+    const value = Number(target.value);
+
+    if (value !== -1) {
+      this.GHNService.getWard({ district_id: value }).subscribe({
+        next: (res => {
+          if (res?.data) {
+            for (let ward of res.data) {
+              this.wards.push(ward);
+            }
+          }
+        }),
+        complete: () => {
+          this.indexDistrict = target.selectedIndex;
+        }
+      })
+    }
+  }
+
+  setIndexWards(event: Event) {
+    this.indexWard = Number((event.target as HTMLSelectElement).selectedIndex);
+  }
+
+  setAddress(): string {
+    return this.houseAddress.trim() + ', ' +
+      this.wards[this.indexWard - 1].WardName.trim() + ', ' +
+      this.districts[this.indexDistrict - 1].DistrictName.trim() + ', ' +
+      this.provinces[this.indexProvince - 1].ProvinceName.trim();
   }
 }

@@ -7,12 +7,13 @@ import { Account } from '../../../models/Account.model';
 import { Response } from '../../../models/Response.model';
 import { Message } from '../../../models/Message.model';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private BASE_URL = 'http://localhost:8090/api/auth';
+  private BASE_URL = environment.apiUrl + '/api/auth';
 
   constructor(
     private http: HttpClient,
@@ -38,9 +39,11 @@ export class AuthService {
     this.http.post<Response<any>>(`${this.BASE_URL}/register`, data).subscribe({
       next: (response: Response<any>) => {
         if (response.status === 'success') {
-          this.router.navigate(['/login']);
           this.toastr.success(response.message)
         }
+      },
+      complete: () => {
+        this.router.navigate(['/login']);
       }
     });
   }
@@ -82,7 +85,7 @@ export class AuthService {
     });
   }
 
-  redirectByRole(role: boolean) {
+  private redirectByRole(role: boolean) {
     return role ? location.href = "/admin/dashboard" : location.href = "/home";
   }
 

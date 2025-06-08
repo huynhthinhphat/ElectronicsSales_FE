@@ -3,12 +3,13 @@ import { Router } from '@angular/router';
 import { Response } from '../../../models/Response.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ForgotPasswordService {
-  private BASE_URL = 'http://localhost:8090/api/email';
+  private BASE_URL = environment.apiUrl + '/api/email';
 
   constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) { }
 
@@ -27,7 +28,6 @@ export class ForgotPasswordService {
           if (localStorage.getItem("userName")) {
             this.router.navigate(['/change-password']);
           }
-          return;
         }
       }
     });

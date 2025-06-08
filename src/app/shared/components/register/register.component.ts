@@ -11,19 +11,19 @@ import { AuthService } from '../../services/AuthService/auth.service';
 export class RegisterComponent implements OnInit {
   constructor(private authService: AuthService, private toastr: ToastrService) { }
 
-  ngOnInit(): void {
-    const user = localStorage.getItem('user');
-    if (user) {
-      location.href = '/home';
-    }
-  }
-
   isShowPassword: boolean = false;
   isShowPasswordAgain: boolean = false;
   fullName: string = '';
   username: string = '';
   password: string = '';
   passwordAgain: string = '';
+
+  ngOnInit(): void {
+    const user = localStorage.getItem('user');
+    if (user) {
+      location.href = '/home';
+    }
+  }
 
   togglePassword() {
     this.isShowPassword = !this.isShowPassword;

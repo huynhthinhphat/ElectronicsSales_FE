@@ -4,12 +4,13 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { CustomPage } from '../../../models/CustomPage.model';
 import { Response as ApiResponse } from '../../../models/Response.model';
 import { Product } from '../../../models/Product.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private BASE_URL = 'http://localhost:8090/api/products';
+  private BASE_URL = environment.apiUrl + '/api/products';
   private productName = new BehaviorSubject<any>('');
   sharedData$ = this.productName.asObservable();
 

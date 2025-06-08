@@ -6,12 +6,13 @@ import { Cart } from '../../../models/Cart.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Account } from '../../../models/Account.model';
 import { CartItem } from '../../../models/CartItem.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
-  private BASE_URL = 'http://localhost:8090/api/carts';
+  private BASE_URL = environment.apiUrl + '/api/carts';
   private totalQuantity = new BehaviorSubject<number>(0);
   updateTotalQuantity$ = this.totalQuantity.asObservable();
 
@@ -60,8 +61,8 @@ export class CartService {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload),
-        credentials: 'include', // gửi cookie (auth/session)
-        keepalive: true         // cho phép request gửi khi unload
+        credentials: 'include',
+        keepalive: true
       });
     } catch (error) {
       console.error('Sync cart on unload failed:', error);

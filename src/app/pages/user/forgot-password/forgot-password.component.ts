@@ -43,11 +43,13 @@ export class ForgotPasswordComponent implements OnInit {
         next: (res) => {
           if (res) {
             this.toastr.success(res?.message);
-            this.isDisabled = true;
-            this.startInterval();
           }
+        },
+        complete: () => {
+          this.isDisabled = true;
+          this.startInterval();
         }
-      });
+      })
     } else {
       this.toastr.info("Không để trống tài khoản")
     }

@@ -4,8 +4,9 @@ import { Account } from '../../../models/Account.model';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { Response } from '../../../models/Response.model';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { CustomPage } from '../../../models/CustomPage.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class AccountService {
     private http: HttpClient
   ) { }
 
-  private BASE_URL = 'http://localhost:8090/api/accounts';
+  private BASE_URL = environment.apiUrl + '/api/accounts';
 
   private emailSubject = new BehaviorSubject<string>(JSON.parse(localStorage.getItem('user') || '{}')?.email || '');
   private fullNameSubject = new BehaviorSubject<string>(JSON.parse(localStorage.getItem('user') || '{}')?.fullName || '');
@@ -40,8 +41,8 @@ export class AccountService {
     this.http.put<Response<any>>(`${this.BASE_URL}/update-password`, data);
   }
 
-  updateUserInformation(data: Account | null) {
-    return this.http.put<Response<any>>(`${this.BASE_URL}/personal`, data, { withCredentials: true });
+  updateUserInformation(data: Account | null): Observable<Response<Account>> {
+    return this.http.put<Response<Account>>(`${this.BASE_URL}/personal`, data, { withCredentials: true });
   }
 
   cutString(str: string, limit: number) {

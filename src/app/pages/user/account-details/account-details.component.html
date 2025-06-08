@@ -50,7 +50,7 @@
                 <input *ngIf="!isAllowEdit" type="text" [placeholder]="fullName"
                     class="w-[50%] text-sm break-words outline-none border border-[#fff] rounded-lg p-2"
                     [ngClass]="getClass(fullName)" [readOnly]="!isAllowEdit">
-                <input *ngIf="isAllowEdit" type="text" #inputFullName [value]="fullName"
+                <input *ngIf="isAllowEdit" type="text" [(ngModel)]="fullName"
                     class="w-[50%] text-sm font-semibold break-words outline-none border rounded-lg p-2 border-[#FF8900] focus:ring-orange-500 focus:ring-2">
             </div>
             <div class="flex">
@@ -63,7 +63,7 @@
                 <input *ngIf="!isAllowEdit" type="text" [placeholder]="email"
                     class="w-[70%] text-sm break-words outline-none border border-[#fff] rounded-lg p-2"
                     [ngClass]="getClass(email)" [readOnly]="!isAllowEdit">
-                <input *ngIf="isAllowEdit" type="text" #inputEmail [value]="email"
+                <input *ngIf="isAllowEdit" type="text" [(ngModel)]="email"
                     class="w-[50%] text-sm font-semibold break-words outline-none border rounded-lg p-2 border-[#FF8900] focus:ring-orange-500 focus:ring-2">
             </div>
             <div class="flex">
@@ -76,7 +76,7 @@
                 <input *ngIf="!isAllowEdit" type="text" [placeholder]="phoneNumber"
                     class="w-[50%] text-sm break-words outline-none border border-[#fff] rounded-lg p-2"
                     [ngClass]="getClass(phoneNumber)" [readOnly]="!isAllowEdit">
-                <input *ngIf="isAllowEdit" type="text" #inputPhoneNumber [value]="phoneNumber"
+                <input *ngIf="isAllowEdit" type="text" [(ngModel)]="phoneNumber"
                     class="w-[50%] text-sm font-semibold break-words outline-none border rounded-lg p-2 border-[#FF8900] focus:ring-orange-500 focus:ring-2">
             </div>
             <div class="flex">
@@ -89,7 +89,7 @@
                 <input *ngIf="!isAllowEdit" type="text" [placeholder]="dateOfBirth"
                     class="w-[50%] text-sm break-words outline-none border border-[#fff] rounded-lg p-2"
                     [ngClass]="getClass(dateOfBirth)" [readOnly]="!isAllowEdit">
-                <input *ngIf="isAllowEdit" type="date" #inputDateOfBirth [value]="dateOfBirth"
+                <input *ngIf="isAllowEdit" type="date" [(ngModel)]="dateOfBirth"
                     class="cursor-pointer w-[50%] text-sm font-semibold break-words outline-none border rounded-lg p-2 border-[#FF8900] focus:ring-orange-500 focus:ring-2">
             </div>
             <div class="flex">
@@ -111,21 +111,41 @@
                 </div>
             </div>
             <div class="flex">
-                <div class="text-gray-500 text-sm flex items-center w-[4vh]">
+                <div class="text-gray-500 text-sm flex items-start w-[4vh] pt-0.5">
                     <i class="fa-solid fa-map-location-dot"></i>
                 </div>
-                <div class="w-[25vh] sm:w-32 text-gray-500 text-sm flex items-center gap-3">
+                <div class="w-[25vh] sm:w-32 text-gray-500 text-sm flex items-start gap-3">
                     Địa chỉ:
                 </div>
                 <div>
-                    <div *ngIf="isAllowEdit" class="w-[60vh] text-sm break-words">
-                        <small class="text-red-500">*Vui lòng đợi vài giây để hệ thống tìm kiếm địa chỉ phù hợp</small>
-                        <input type="text" (input)="getLocations($event)" placeholder="Nhập địa chỉ..."
-                            list="suggestion-list" [value]="address"
-                            class="w-[76%] text-sm font-semibold break-words outline-none border rounded-lg p-2 border-[#FF8900] focus:ring-orange-500 focus:ring-2" />
-                        <datalist id="suggestion-list" *ngIf="suggestions.length > 0">
-                            <option *ngFor="let s of suggestions" [value]="s"></option>
-                        </datalist>
+                    <div *ngIf="isAllowEdit" class="flex flex-col gap-3">
+                        <select (change)="getDistricts($event)"
+                            class="cursor-pointer outline-none text-sm border border-[#FF8900] py-2 px-1.5 rounded-lg">
+                            <option [value]="-1">Chọn tỉnh/thành phố</option>
+                            <option *ngFor="let province of provinces" [value]="province.ProvinceID">
+                                {{province.ProvinceName}}
+                            </option>
+                        </select>
+                        <select [disabled]="districts.length === 0" (change)="getWards($event)"
+                            class="outline-none text-sm border border-[#FF8900] py-2 px-1.5 rounded-lg"
+                            [ngClass]="{'cursor-not-allowed text-gray-400 border-gray-400' : districts.length === 0,'cursor-pointer' : districts.length > 0}">
+                            <option [value]="-1">Chọn quận/huyện</option>
+                            <option *ngFor="let district of districts" [value]="district.DistrictID">
+                                {{district.DistrictName}}
+                            </option>
+                        </select>
+                        <select [disabled]="wards.length === 0" (change)="setIndexWards($event)"
+                            class="outline-none text-sm border border-[#FF8900] py-2 px-1.5 rounded-lg"
+                            [ngClass]="{'cursor-not-allowed text-gray-400 border-gray-400' : wards.length === 0,'cursor-pointer' : wards.length > 0}">
+                            <option [value]="-1">Chọn xã/thị trấn</option>
+                            <option *ngFor="let ward of wards" [value]="ward.WardID">
+                                {{ward.WardName}}
+                            </option>
+                        </select>
+                        <input type="text" [(ngModel)]="houseAddress" [disabled]="indexWard === -1"
+                            class="text-sm break-words outline-none border border-[#FF8900] rounded-lg p-2"
+                            [ngClass]="{'cursor-not-allowed text-gray-400 border-gray-400' : indexWard === -1,'cursor-text' : indexWard !== -1}"
+                            placeholder="Nhập số nhà cụ thể">
                     </div>
                     <div *ngIf="!isAllowEdit" class="w-[60vh] pl-2 text-sm break-words"
                         [ngClass]="{'text-gray-400': address === 'Chưa cập nhật', 'font-semibold': address !== 'Chưa cập nhật'}">
