@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Product } from '../../../models/Product.model';
 import { Response as ApiResponse } from '../../../models/Response.model';
 import { Cart } from '../../../models/Cart.model';
 import { BehaviorSubject, Observable } from 'rxjs';

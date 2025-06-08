@@ -30,7 +30,7 @@ export class CheckoutComponent implements OnInit {
   seconds: number = 10;
   provinceId: number = 0;
   districtId: number = 0;
-  priceOfDelivery: number = 15000;
+  priceOfDelivery: number = 0;
   totalPriceTempOfOrder: number = 0;
   finalTotalPriceOfOrder: number = 0;
   wardName: string = '';
